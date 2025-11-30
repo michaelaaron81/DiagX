@@ -2,22 +2,28 @@ import { WaterCooledUnitProfile } from './wshp.profile';
 import { DomainResult, DiagnosticStatus, DomainFinding } from '../shared/wshp.types';
 import { RefrigerationMeasurements } from '../modules/refrigeration/refrigeration.types';
 import { runRefrigerationDomain } from '../modules/refrigeration/refrigeration.domain';
+import { RefrigerationEngineResult } from '../modules/refrigeration/refrigeration.engine';
 import { hydronicModule } from '../modules/hydronic/hydronic.module';
+import { HydronicMeasurements } from '../modules/hydronic/hydronic.types';
 import { condenserApproachModule } from '../modules/condenserApproach/condenserApproach.module';
 import { runAirsideEngine } from '../modules/airside/airside.engine';
+import { AirsideMeasurements, AirsideEngineResult } from '../modules/airside/airside.types';
 import { runReciprocatingCompressorEngine } from '../modules/compressor/recip.engine';
+import { ReciprocatingCompressorResult, ReciprocatingCompressorMeasurements } from '../modules/compressor/recip.types';
 import { runScrollCompressorEngine } from '../modules/compressor/scroll.engine';
+import { ScrollCompressorResult, ScrollCompressorMeasurements } from '../modules/compressor/scroll.types';
 import { runReversingValveEngine } from '../modules/reversingValve/reversing.engine';
+import { ReversingValveDiagnosis, ReversingValveMeasurements } from '../modules/reversingValve/reversing.types';
 import { buildRefrigerationConfigFromWSHP } from './wshp.config.refrigeration';
 
 export interface WshpDiagxInput {
   profile: WaterCooledUnitProfile;
   measurements: {
     refrigeration?: RefrigerationMeasurements;
-    airside?: any;
-    recipCompressor?: any;
-    scrollCompressor?: any;
-    reversingValve?: any;
+    airside?: Record<string, unknown>;
+    recipCompressor?: Record<string, unknown>;
+    scrollCompressor?: Record<string, unknown>;
+    reversingValve?: Record<string, unknown>;
   };
 }
 
@@ -31,14 +37,14 @@ export function runWshpDiagx(input: WshpDiagxInput): WshpDiagxResult {
   const { profile, measurements } = input;
   const domainResults: DomainResult[] = [];
 
-  let airResult: any = undefined;
-  let refResult: any = undefined;
-  let recipResult: any = undefined;
-  let scrollResult: any = undefined;
-  let revResult: any = undefined;
+  let airResult: AirsideEngineResult | undefined = undefined;
+  let refResult: DomainResult<RefrigerationEngineResult> | undefined = undefined;
+  let recipResult: ReciprocatingCompressorResult | undefined = undefined;
+  let scrollResult: ScrollCompressorResult | undefined = undefined;
+  let revResult: ReversingValveDiagnosis | undefined = undefined;
 
   if (measurements.airside) {
-    airResult = runAirsideEngine(measurements.airside as any, profile as any);
+    airResult = runAirsideEngine(measurements.airside as unknown as AirsideMeasurements, profile);
     domainResults.push({ domain: 'airside', ok: airResult.status === 'ok', findings: [], details: airResult });
   }
 
@@ -51,7 +57,7 @@ export function runWshpDiagx(input: WshpDiagxInput): WshpDiagxResult {
   // Hydronic source diagnostics: run when profile.waterSide present and refrigeration measurements include water temps
   if (profile.waterSide && measurements.refrigeration && (measurements.refrigeration.enteringWaterTemp !== undefined || measurements.refrigeration.leavingWaterTemp !== undefined)) {
     try {
-      const hydMeasurements: any = {
+      const hydMeasurements: HydronicMeasurements = {
         enteringWaterTemp: measurements.refrigeration.enteringWaterTemp ?? null,
         leavingWaterTemp: measurements.refrigeration.leavingWaterTemp ?? null,
         flowRateGPM: profile.waterSide?.flowRate ?? null,
@@ -67,19 +73,19 @@ export function runWshpDiagx(input: WshpDiagxInput): WshpDiagxResult {
   }
 
   if (measurements.recipCompressor) {
-    recipResult = runReciprocatingCompressorEngine(measurements.recipCompressor as any, profile as any);
+    recipResult = runReciprocatingCompressorEngine(measurements.recipCompressor as unknown as ReciprocatingCompressorMeasurements, profile);
     domainResults.push({ domain: 'compressor', ok: recipResult.status === 'ok', findings: [], details: recipResult });
   }
 
   // Condenser approach diagnostics: run when ambient + condensing pressure present in measurements.refrigeration
   if (measurements.refrigeration && (measurements.refrigeration.ambientTemp !== undefined || measurements.refrigeration.condensingPressure !== undefined)) {
     try {
-      const cMeasurements: any = {
+      const cMeasurements: import('../modules/condenserApproach/condenserApproach.types').CondenserApproachMeasurements = {
         ambientTemp: measurements.refrigeration.ambientTemp ?? null,
         condensingPressure: measurements.refrigeration.condensingPressure ?? null,
         liquidLineTemp: measurements.refrigeration.liquidTemp ?? null,
       };
-      const cProfile: any = { refrigerantType: profile.refrigeration?.refrigerantType };
+      const cProfile: import('../modules/condenserApproach/condenserApproach.types').CondenserApproachProfile = { refrigerantType: profile.refrigeration?.refrigerantType };
       const cResult = condenserApproachModule.diagnose(cMeasurements, cProfile);
       domainResults.push({ domain: 'condenser_approach', ok: cResult.status === 'ok', findings: [], details: cResult });
     } catch (e) {
@@ -88,12 +94,12 @@ export function runWshpDiagx(input: WshpDiagxInput): WshpDiagxResult {
   }
 
   if (measurements.scrollCompressor) {
-    scrollResult = runScrollCompressorEngine(measurements.scrollCompressor as any, profile as any);
+    scrollResult = runScrollCompressorEngine(measurements.scrollCompressor as unknown as ScrollCompressorMeasurements, profile);
     domainResults.push({ domain: 'compressor', ok: scrollResult.status === 'ok', findings: [], details: scrollResult });
   }
 
   if (measurements.reversingValve) {
-    revResult = runReversingValveEngine(measurements.reversingValve as any, profile as any);
+    revResult = runReversingValveEngine(measurements.reversingValve as unknown as ReversingValveMeasurements, profile);
     domainResults.push({ domain: 'reversing_valve', ok: revResult.status === 'ok', findings: [], details: revResult });
   }
 

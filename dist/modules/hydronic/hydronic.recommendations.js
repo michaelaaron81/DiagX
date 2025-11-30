@@ -1,4 +1,5 @@
 export function generateHydronicRecommendations(result, context) {
+    void context;
     const recs = [];
     const { flags, values, status } = result;
     // Critical delta-T: immediate attention recommended (no forced shutdown)

@@ -77,5 +77,6 @@ export interface ReciprocatingCompressorResult extends EngineResult<Reciprocatin
 }
 
 // You can make this a real type later if you want compressor-specific config
-export type ReciprocatingCompressorConfig = any;
+// Generic compressor config placeholder — prefer unknown for safety until explicitly typed
+export type ReciprocatingCompressorConfig = Record<string, unknown> | unknown;
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { runCondenserApproachEngine } from '../src/modules/condenserApproach/condenserApproach.engine';
-import { CondenserApproachEngineInput } from '../src/modules/condenserApproach/condenserApproach.types';
+import type { CondenserApproachEngineInput, CondenserApproachMeasurements, CondenserApproachProfile } from '../src/modules/condenserApproach/condenserApproach.types';
 
 function buildInput(partial: Partial<CondenserApproachEngineInput>) {
   return {
@@ -15,7 +15,7 @@ function buildInput(partial: Partial<CondenserApproachEngineInput>) {
       tons: 10,
       refrigerantType: 'R-410A',
       profileConfig: {},
-      ...(partial.context ?? {}),
+      ...(partial.profile ?? {}),
     },
   };
 }
@@ -23,7 +23,7 @@ function buildInput(partial: Partial<CondenserApproachEngineInput>) {
 describe('CondenserApproachEngine - full engine behavior', () => {
   it('populates approach & lift values for nominal input', () => {
     const input = buildInput({});
-    const result = runCondenserApproachEngine(input.measurements as any, { profile: input.profile as any });
+    const result = runCondenserApproachEngine(input.measurements as CondenserApproachMeasurements, { profile: input.profile as CondenserApproachProfile });
 
     expect(result.values.condenserApproach).not.toBeNull();
     expect(result.values.liquidSubcooling).not.toBeNull();
@@ -31,8 +31,8 @@ describe('CondenserApproachEngine - full engine behavior', () => {
   });
 
   it('flags abnormal approach when values are out of threshold (placeholder)', () => {
-    const input = buildInput({ measurements: { liquidLineTemp: 50, ambientTemp: 95 } as any });
-    const result = runCondenserApproachEngine(input.measurements as any, { profile: input.profile as any });
+    const input = buildInput({ measurements: { liquidLineTemp: 50, ambientTemp: 95 } as CondenserApproachMeasurements });
+    const result = runCondenserApproachEngine(input.measurements as CondenserApproachMeasurements, { profile: input.profile as CondenserApproachProfile });
     expect(result.flags.approachStatus).toBeDefined();
   });
 });

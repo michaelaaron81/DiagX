@@ -1,8 +1,8 @@
 #!/usr/bin/env ts-node
 import { program } from 'commander';
 import fs from 'fs';
-import path from 'path';
-import { saveEntry, loadEntry, listEntries, removeEntry, PTEntry } from './localOverrides';
+// path import no longer required here
+import { saveEntry, loadEntry, listEntries, removeEntry, PTEntry, PTChart } from './localOverrides';
 
 program.name('diagx-pt').description('Manage local, ephemeral PT override tables (stored locally, not in repo)');
 
@@ -10,12 +10,18 @@ program.command('import')
   .argument('<profileId>', 'profile ID to attach this manual PT table to')
   .argument('<ptFile>', 'path to JSON file containing PT chart - array of [tempF, pressurePSIG]')
   .option('-d, --description <text>', 'optional description for this entry')
-  .action((profileId: string, ptFile: string, opts: any) => {
+  .action((profileId: string, ptFile: string, opts: { description?: string }) => {
     if (!fs.existsSync(ptFile)) { console.error('pt file not found:', ptFile); process.exit(2); }
     const raw = fs.readFileSync(ptFile, 'utf8');
-    let pt: any;
+    let pt: unknown;
     try { pt = JSON.parse(raw); } catch (e) { console.error('invalid json'); process.exit(3); }
-    const entry: PTEntry = { profileId, pt, description: opts.description, savedAt: new Date().toISOString() };
+    // Validate pt chart shape: array of [number, number]
+    if (!Array.isArray(pt) || !pt.every((r: unknown) => Array.isArray(r) && r.length >= 2 && typeof r[0] === 'number' && typeof r[1] === 'number')) {
+      console.error('PT file must be a JSON array of [tempF, pressurePSIG] pairs');
+      process.exit(3);
+    }
+
+    const entry: PTEntry = { profileId, pt: pt as PTChart, description: opts.description, savedAt: new Date().toISOString() };
     saveEntry(entry);
     console.log(`Saved PT override for profile ${profileId} (ephemeral local only)`);
   });

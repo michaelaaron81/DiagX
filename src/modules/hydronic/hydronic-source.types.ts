@@ -33,6 +33,9 @@ export interface HydronicSourceProfileConfig {
     source?: 'industry' | 'nameplate_calculated' | 'manufacturer';
   };
 
+  // Optional absolute design flow (GPM) if provided by profile
+  designFlowGPM?: number | null;
+
   manufacturerExpectedEWTRange?: {
     min: number;
     max: number;

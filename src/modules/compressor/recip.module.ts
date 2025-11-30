@@ -1,4 +1,4 @@
-import { DiagnosticModule, ValidationResult, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp, formatTemperature, Recommendation } from '../../shared/wshp.types';
+import { DiagnosticModule, ValidationResult, DiagnosisExplanation, ModuleMetadata, ModuleHelp, Recommendation } from '../../shared/wshp.types';
 import { WaterCooledUnitProfile } from '../../wshp/wshp.profile';
 import { ReciprocatingCompressorMeasurements, ReciprocatingCompressorResult } from './recip.types';
 import { runReciprocatingCompressorEngine, validateReciprocatingCompressorMeasurements } from './recip.engine';
@@ -18,7 +18,7 @@ export const recipCompressorHelp: ModuleHelp<ReciprocatingCompressorMeasurements
     dischargePressure: { field: 'dischargePressure', label: 'Discharge Pressure', description: 'PSIG' },
     suctionTemp: { field: 'suctionTemp', label: 'Suction Temp', description: '°F' },
     dischargeTemp: { field: 'dischargeTemp', label: 'Discharge Temp', description: '°F' },
-    compressorCurrent: { field: 'compressorCurrent', label: 'Compressor Current', description: 'Amps' } as any,
+    compressorCurrent: { field: 'compressorCurrent', label: 'Compressor Current', description: 'Amps' },
   }
 };
 
@@ -27,7 +27,7 @@ export class ReciprocatingCompressorDiagnosticModule implements DiagnosticModule
   help = recipCompressorHelp;
 
   validate(measurements: ReciprocatingCompressorMeasurements): ValidationResult {
-    return validateReciprocatingCompressorMeasurements(measurements as any);
+    return validateReciprocatingCompressorMeasurements(measurements);
   }
 
   diagnose(measurements: ReciprocatingCompressorMeasurements, profile: WaterCooledUnitProfile) {
@@ -79,7 +79,7 @@ export class ReciprocatingCompressorDiagnosticModule implements DiagnosticModule
       whatThisMeans: 'Summary based on compression ratio, current, and unloading state.',
       whyThisHappens,
       whatToDoNext,
-    } as any;
+    } as DiagnosisExplanation;
   }
 }
 

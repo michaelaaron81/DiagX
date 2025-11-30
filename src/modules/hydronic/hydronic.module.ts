@@ -38,21 +38,21 @@ export class HydronicDiagnosticModule implements DiagnosticModule<HydronicProfil
   help = hydronicHelp;
 
   validate(measurements: HydronicMeasurements): ValidationResult {
-    return validateHydronicMeasurements(measurements) as any;
+    return validateHydronicMeasurements(measurements);
   }
 
   diagnose(measurements: HydronicMeasurements, profile: HydronicProfileConfig) {
     const validation = validateHydronicMeasurements(measurements);
     // If invalid, follow existing pattern - throw if fatal errors (none expected here)
     if (!validation.ok && validation.errors && validation.errors.length) {
-      const err: any = new Error('Measurement validation failed');
+      const err: Error & { validation?: ValidationResult } = new Error('Measurement validation failed');
       err.validation = validation;
       throw err;
     }
 
     const result = runHydronicEngine(measurements, { profile });
     // generate recommendations via helper
-    (result as any).recommendations = generateHydronicRecommendations(result, { profile });
+    result.recommendations = generateHydronicRecommendations(result, { profile });
 
     return result;
   }
@@ -78,7 +78,8 @@ export class HydronicDiagnosticModule implements DiagnosticModule<HydronicProfil
   }
 
   getMeasurementHelp(field: keyof HydronicMeasurements) {
-    return (this.help.measurementHelp as any)[field];
+    const mh = this.help.measurementHelp as Partial<Record<keyof HydronicMeasurements, MeasurementHelp>>;
+    return mh[field];
   }
 
   explainDiagnosis(diagnosis: HydronicEngineResult): DiagnosisExplanation {

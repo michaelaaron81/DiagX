@@ -1,6 +1,6 @@
-import { DiagnosticModule, ValidationResult, Recommendation, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp, formatTemperature, CONSTANTS } from '../../shared/wshp.types';
+import { DiagnosticModule, ValidationResult, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp, formatTemperature, CONSTANTS } from '../../shared/wshp.types';
 import { WaterCooledUnitProfile } from '../../wshp/wshp.profile';
-import { RefrigerationMeasurements } from './refrigeration.types';
+import { RefrigerationMeasurements, RefrigerationConfig } from './refrigeration.types';
 import { RefrigerationEngineResult, runRefrigerationEngine, validateRefrigerationMeasurements as engineValidate } from './refrigeration.engine';
 import { validateRefrigerationMeasurements } from './refrigeration.validation';
 
@@ -46,7 +46,7 @@ export class RefrigerationDiagnosticModule implements DiagnosticModule<WaterCool
 
   validate(measurements: RefrigerationMeasurements): ValidationResult {
     // preserve existing engine validation contract for module.validate (back-compat)
-    return engineValidate(measurements as any) as any;
+    return engineValidate(measurements);
   }
 
   diagnose(measurements: RefrigerationMeasurements, profile: WaterCooledUnitProfile) {
@@ -57,14 +57,16 @@ export class RefrigerationDiagnosticModule implements DiagnosticModule<WaterCool
       const hasError = validation.issues.some(i => i.severity === 'error');
       if (hasError) {
         // Deterministic behavior for Phase 1: throw a structured error including validation details.
-        const err: any = new Error('Measurement validation failed');
+        const err = new Error('Measurement validation failed') as Error & {
+          validation: ReturnType<typeof validateRefrigerationMeasurements>;
+        };
         err.validation = validation;
         throw err;
       }
       // If only warnings/infos present, proceed to engine (Phase 1 allows engine to run on non-error issues)
     }
     // Build a minimal config for engine using profile values. The engine expects RefrigerationConfig shape
-    const cfg: any = {
+    const cfg: RefrigerationConfig = {
       refrigerant: profile.refrigeration.refrigerantType,
       coolingMeterType: profile.refrigeration.metering.cooling.type,
       heatingMeterType: profile.refrigeration.metering.heating?.type,
@@ -76,6 +78,7 @@ export class RefrigerationDiagnosticModule implements DiagnosticModule<WaterCool
       subcoolingWaterCooled: CONSTANTS.SUBCOOLING_WATER_COOLED,
       compressionRatioRange: CONSTANTS.COMPRESSION_RATIO,
       ptOverride: profile.refrigeration.ptOverride,
+      metering: profile.refrigeration.metering,
     };
 
     return runRefrigerationEngine(measurements, cfg);
@@ -116,7 +119,7 @@ export class RefrigerationDiagnosticModule implements DiagnosticModule<WaterCool
   }
 
   getMeasurementHelp(field: keyof RefrigerationMeasurements): MeasurementHelp | undefined {
-    return (this.help.measurementHelp as any)[field];
+    return this.help.measurementHelp[field] as MeasurementHelp | undefined;
   }
 
   explainDiagnosis(diagnosis: RefrigerationEngineResult): DiagnosisExplanation {

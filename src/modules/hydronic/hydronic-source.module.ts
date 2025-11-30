@@ -19,19 +19,24 @@ function buildHydronicSourceEngineInput(
   const context: HydronicSourceContext = {
     profileId: profile.id,
     tons: profile.nominalTons ?? null,
-    loopType: (hydronicProfile as any).loopType ?? 'unknown',
+    loopType:
+      hydronicProfile.loopType === 'open_tower' || hydronicProfile.loopType === 'closed_tower'
+        ? 'open_tower'
+        : hydronicProfile.loopType === 'closed_loop' || hydronicProfile.loopType === 'ground_loop' || hydronicProfile.loopType === 'boiler'
+        ? 'closed_loop'
+        : 'unknown',
     profileConfig: {
       // Map existing profile fields into HydronicSourceProfileConfig as needed
     },
   } as HydronicSourceContext;
 
   const inputMeasurements: HydronicSourceMeasurements = {
-    enteringWaterTemp: (hydronicMeas as any).enteringWaterTemp ?? null,
-    leavingWaterTemp: (hydronicMeas as any).leavingWaterTemp ?? null,
-    loopFluidTemp: (hydronicMeas as any).loopFluidTemp ?? null,
-    flowGpm: (hydronicMeas as any).flowGpm ?? null,
-    ambientWetBulb: (hydronicMeas as any).ambientWetBulb ?? null,
-    ambientDryBulb: (hydronicMeas as any).ambientDryBulb ?? null,
+    enteringWaterTemp: hydronicMeas.enteringWaterTemp ?? null,
+    leavingWaterTemp: hydronicMeas.leavingWaterTemp ?? null,
+    loopFluidTemp: (hydronicMeas as any).loopFluidTemp ?? (hydronicMeas as any).enteringLoopTemp ?? (hydronicMeas as any).leavingLoopTemp ?? null,
+    flowGpm: hydronicMeas.flowGpm ?? null,
+    ambientWetBulb: hydronicMeas.ambientWetBulb ?? null,
+    ambientDryBulb: hydronicMeas.ambientDryBulb ?? null,
   };
 
   return {

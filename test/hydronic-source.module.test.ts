@@ -6,27 +6,27 @@ import { CombinedMeasurements } from '../src/measurements/types';
 const baseProfile: CombinedProfile = {
   id: 'hydronic-test',
   nominalTons: 10,
-  airside: {} as any,
+  airside: {} as Record<string, unknown>,
   waterSide: {
     loopType: 'open_tower',
-  } as any,
-  refrigeration: {} as any,
-  compressor: {} as any,
-  electrical: {} as any,
+  },
+  refrigeration: {} as Record<string, unknown>,
+  compressor: {} as Record<string, unknown>,
+  electrical: {} as Record<string, unknown>,
 };
 
 const baseMeasurements: CombinedMeasurements = {
-  airside: {} as any,
+  airside: {} as Record<string, unknown>,
   waterSide: {
     enteringWaterTemp: 85,
     leavingWaterTemp: 95,
     flowGpm: 50,
     ambientWetBulb: 78,
-  } as any,
-  refrigeration: {} as any,
-  recipCompressor: {} as any,
-  scrollCompressor: {} as any,
-  reversingValve: {} as any,
+  },
+  refrigeration: {} as Record<string, unknown>,
+  recipCompressor: {} as Record<string, unknown>,
+  scrollCompressor: {} as Record<string, unknown>,
+  reversingValve: {} as Record<string, unknown>,
 };
 
 describe('HydronicSource module orchestration', () => {

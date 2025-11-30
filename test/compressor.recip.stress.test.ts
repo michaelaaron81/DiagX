@@ -5,7 +5,7 @@ import { WaterCooledUnitProfile } from '../src/wshp/wshp.profile';
 import fs from 'fs';
 
 // Stress test scenarios for reciprocating compressor engine
-const scenarios: { name: string; measurements: ReciprocatingCompressorMeasurements; profile: any }[] = [
+const scenarios: { name: string; measurements: ReciprocatingCompressorMeasurements; profile: Record<string, unknown> }[] = [
   {
     name: 'Normal Operation - OK Status',
     measurements: {
@@ -315,7 +315,7 @@ test('reciprocating compressor stress test - generate detailed log', () => {
 
     if (result.recommendations && result.recommendations.length > 0) {
       log += `### Recommendations Generated (${result.recommendations.length})\n`;
-      result.recommendations.forEach((rec, i) => {
+      result.recommendations.forEach(rec => {
         log += `- **${rec.title}**: ${rec.description}\n`;
       });
       log += '\n';

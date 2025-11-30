@@ -1,9 +1,9 @@
 import { Recommendation } from '../../shared/wshp.types';
-import { CondenserApproachResult } from './condenserApproach.types';
+import { CondenserApproachResult, CondenserApproachFlags } from './condenserApproach.types';
 
 export function generateCondenserApproachRecommendations(result: CondenserApproachResult): Recommendation[] {
   const recs: Recommendation[] = [];
-  const flags = result.flags as any;
+  const flags: CondenserApproachFlags = result.flags;
 
   if (flags.approachStatus === 'critical') {
     recs.push({

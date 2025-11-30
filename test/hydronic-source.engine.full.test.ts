@@ -42,7 +42,7 @@ describe('HydronicSourceEngine - full engine behavior', () => {
         enteringWaterTemp: 85,
         leavingWaterTemp: 110, // TODO: adjust after real thresholds
         flowGpm: 10,
-      } as any,
+      },
     });
 
     const result = runHydronicSourceEngine(input);

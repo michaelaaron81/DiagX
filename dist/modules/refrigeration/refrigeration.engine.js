@@ -75,7 +75,7 @@ function analyzeSuperheat(superheat, mode, metering) {
         return { status: 'warning' };
     return { status: 'ok' };
 }
-function analyzeSubcooling(subcooling, enteringWaterTemp) {
+function analyzeSubcooling(subcooling) {
     const idealRange = CONSTANTS.SUBCOOLING_WATER_COOLED;
     if (subcooling < 3)
         return { status: 'alert' };
@@ -113,25 +113,6 @@ function analyzeWaterTransfer(waterDeltaT, tons, designGPM) {
     if (waterDeltaT > maxAcceptable)
         return { status: 'warning' };
     return { status: 'ok' };
-}
-function determineOverallFinding(superheat, subcooling, compressionRatio, waterDeltaT, mode) {
-    if (superheat < 5)
-        return { overallFinding: 'CRITICAL: Liquid slugging risk - Extremely low superheat', likelyIssue: 'TXV stuck open or severe overcharge' };
-    if (compressionRatio < 2.5)
-        return { overallFinding: 'CRITICAL: Severe internal bypass detected', likelyIssue: 'Reversing valve stuck or compressor valves failed' };
-    if (superheat > 15 && subcooling < 8)
-        return { overallFinding: 'System is UNDERCHARGED - Low refrigerant', likelyIssue: 'Refrigerant leak' };
-    if (superheat < 8 && subcooling > 15)
-        return { overallFinding: 'System is OVERCHARGED - Excess refrigerant', likelyIssue: 'Overcharge' };
-    if (superheat > 15 && subcooling > 15)
-        return { overallFinding: 'Liquid line or metering device RESTRICTION detected', likelyIssue: 'Restricted filter drier or metering device' };
-    if (compressionRatio < 3.5 && superheat > 8 && superheat < 15)
-        return { overallFinding: 'Internal bypass - Reversing valve or compressor issue', likelyIssue: 'Reversing valve leaking or compressor losing efficiency' };
-    if (compressionRatio > 6.0)
-        return { overallFinding: 'Excessive head pressure detected', likelyIssue: 'Water flow restricted, fouled condenser or high entering water temp' };
-    if (superheat >= 8 && superheat <= 15 && subcooling >= 8 && subcooling <= 15 && compressionRatio >= 3.5 && compressionRatio <= 5.5)
-        return { overallFinding: 'Refrigeration circuit operating normally - All parameters within range' };
-    return { overallFinding: 'Some refrigeration parameters out of normal range - See individual findings' };
 }
 function getWorstStatus(statuses) {
     if (statuses.includes('critical'))
@@ -330,9 +311,11 @@ export function runRefrigerationEngine(measurements, config) {
     if (measurements.dischargeTemp !== undefined)
         dischargeSuperheat = measurements.dischargeTemp - dischargeSatTemp;
     const superheatAnalysis = analyzeSuperheat(superheat, measurements.mode, config.metering);
-    const subcoolingAnalysis = analyzeSubcooling(subcooling, measurements.enteringWaterTemp ?? 0);
+    const subcoolingAnalysis = analyzeSubcooling(subcooling);
     const compressionRatioAnalysis = analyzeCompressionRatio(compressionRatio);
     const waterTransferAnalysis = analyzeWaterTransfer(waterDeltaT, config.nominalTons, config.designWaterFlowGPM);
+    // Legacy helper retained for backward-compatibility; result is not used in the engine core.
+    generateRecommendations(superheatAnalysis, subcoolingAnalysis, compressionRatioAnalysis, waterTransferAnalysis, measurements, config);
     const statuses = [superheatAnalysis.status, subcoolingAnalysis.status, compressionRatioAnalysis.status, waterTransferAnalysis.status];
     const overallStatus = getWorstStatus(statuses);
     // Build EngineResult-shaped values and flags

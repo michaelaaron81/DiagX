@@ -22,6 +22,8 @@ function analyzeDeltaTForSource(deltaT, expected) {
         return 'unknown';
     if (deltaT <= 1)
         return 'critical';
+    if (!expected)
+        return 'unknown';
     if (deltaT < expected.min)
         return 'alert';
     if (deltaT > expected.max * 1.5)
@@ -62,7 +64,11 @@ function evaluateFlags(values, input) {
         return 'ok';
     })();
     // derive design flow GPM if available, prefer explicit designFlowGPM in profileConfig
-    const expected = getExpectedHydronicDeltaT(profileConfig);
+    const expectedProfile = {
+        expectedDeltaT: profileConfig?.designDeltaT ? { ...profileConfig.designDeltaT, source: 'profile' } : undefined,
+        designFlowGPM: profileConfig?.designFlowGPM ?? undefined,
+    };
+    const expected = getExpectedHydronicDeltaT(expectedProfile);
     const designFlowFromProfile = profileConfig?.designFlowGPM ?? null;
     const designFlowEstimated = (input.context.tons && expected && expected.ideal)
         ? Math.round((input.context.tons * 12000) / (expected.ideal * 500))
@@ -112,11 +118,16 @@ export function runHydronicSourceEngine(input) {
     const deltaT = computeDeltaT(enteringWaterTemp, leavingWaterTemp);
     const approachToAmbient = computeApproachToAmbient(leavingWaterTemp, ambientWetBulb ?? null, ambientDryBulb ?? null, loopType ?? 'unknown');
     // derive design flow for normalized index
-    const expected = getExpectedHydronicDeltaT((input.context && input.context.profileConfig));
+    // Map profileConfig.designDeltaT (which may include manufacturer/nameplate source) into HydronicProfileConfig shape
+    const expectedProfileFromContext = {
+        expectedDeltaT: input.context.profileConfig?.designDeltaT ? { ...input.context.profileConfig.designDeltaT, source: 'profile' } : undefined,
+        designFlowGPM: input.context.profileConfig?.designFlowGPM ?? undefined,
+    };
+    const expected = getExpectedHydronicDeltaT(expectedProfileFromContext);
     const designFlowEstimated = (input.context.tons && expected && expected.ideal)
         ? Math.round((input.context.tons * 12000) / (expected.ideal * 500))
         : null;
-    const designFlowGPM = (input.context && input.context.profileConfig && input.context.profileConfig.designFlowGPM) || designFlowEstimated || null;
+    const designFlowGPM = input.context.profileConfig?.designFlowGPM ?? designFlowEstimated ?? null;
     const values = {
         enteringWaterTemp: enteringWaterTemp ?? null,
         leavingWaterTemp: leavingWaterTemp ?? null,

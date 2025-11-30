@@ -2,7 +2,7 @@ import { round, formatTemperature } from '../../shared/wshp.types';
 // Helpers: expected ranges (fallback 'industry' if no nameplate data)
 export function getExpectedDeltaT(profile, mode) {
     // Prefer user-provided manufacturer values in profile (profile.airside.manufacturerExpectedDeltaT)
-    const m = profile?.airside?.manufacturerExpectedDeltaT;
+    const m = profile.airside?.manufacturerExpectedDeltaT;
     if (m && typeof m.min === 'number' && typeof m.ideal === 'number' && typeof m.max === 'number') {
         return { min: m.min, ideal: m.ideal, max: m.max, source: 'manufacturer' };
     }
@@ -16,7 +16,7 @@ export function getExpectedDeltaT(profile, mode) {
 }
 export function getExpectedCFMPerTon(profile, mode) {
     // Prefer user-provided manufacturer CFM/ton if present
-    const m = profile?.airside?.manufacturerCFMPerTon;
+    const m = profile.airside?.manufacturerCFMPerTon;
     if (m && typeof m.min === 'number' && typeof m.ideal === 'number' && typeof m.max === 'number') {
         return { min: m.min, ideal: m.ideal, max: m.max, source: 'manufacturer' };
     }
@@ -29,7 +29,7 @@ export function getExpectedCFMPerTon(profile, mode) {
     // Fallback industry
     return { min: 350, ideal: 400, max: 450, source: 'industry' };
 }
-export function requiresManufacturerDataDisclaimer(profile, subject) {
+export function requiresManufacturerDataDisclaimer(profile) {
     // Simplified: if profile.model present consider manufacturer-specific; otherwise require disclaimer
     return !profile.model;
 }
@@ -69,14 +69,11 @@ function analyzeDeltaT(deltaT, expectedRange, mode) {
         return { status: 'warning' };
     return { status: 'ok' };
 }
-function analyzeAirflow(cfmPerTon, expectedRange, mode, measured) {
+function analyzeAirflow(cfmPerTon, expectedRange) {
     if (!cfmPerTon)
         return { status: 'ok' };
-    const method = measured ? 'Measured' : 'Calculated';
-    const sourceNote = expectedRange.source === 'nameplate_calculated' ? ' from nameplate design CFM' : ' (industry standard)';
     if (cfmPerTon < 250)
         return { status: 'critical' };
-    const deviation = ((cfmPerTon - expectedRange.ideal) / expectedRange.ideal) * 100;
     if (cfmPerTon < expectedRange.min)
         return { status: 'alert' };
     if (cfmPerTon > 550)
@@ -94,7 +91,7 @@ function analyzeStaticPressure(totalESP, ratedESP) {
         return { status: 'warning' };
     return { status: 'ok' };
 }
-export function generateRecommendations(deltaTAnalysis, airflowAnalysis, staticPressureAnalysis, measurements, profile, expectedCFM) {
+export function generateRecommendations(deltaTAnalysis, airflowAnalysis, staticPressureAnalysis, measurements, profile) {
     const recommendations = [];
     if (deltaTAnalysis.status === 'critical' && measurements.mode === 'cooling') {
         recommendations.push({
@@ -180,7 +177,7 @@ export function generateRecommendations(deltaTAnalysis, airflowAnalysis, staticP
             intent: 'diagnostic',
             summary: 'Airflow above expected range but ΔT is degraded; verify fan, ducts, and measurement technique before drawing refrigerant-side conclusions.',
             rationale: 'High airflow can reduce ΔT; be cautious when interpreting refrigerant diagnostics based on ΔT in this situation.',
-            notes: ['Advisory — do not adjust refrigerant charge solely on this recommendation.'],
+            notes: ['Advisory — do not infer refrigerant charge solely from this recommendation.'],
         });
     }
     if (recommendations.length === 0) {
@@ -218,7 +215,7 @@ export function runAirsideEngine(measurements, profile) {
     const expectedCFMResult = getExpectedCFMPerTon(profile, measurements.mode);
     // Always ask the user to verify OEM/IOM manuals and offer a place to include manufacturer curves in the profile.
     disclaimers.push('Always verify expected coil and fan curves with the equipment Installation, Operation & Maintenance (IOM) manual. You can pass manufacturer ranges via profile.airside.manufacturerExpectedDeltaT and profile.airside.manufacturerCFMPerTon if available (do not commit OEM data into the repository).');
-    if (expectedDeltaTResult.source === 'industry' && requiresManufacturerDataDisclaimer(profile, 'coil performance')) {
+    if (expectedDeltaTResult.source === 'industry' && requiresManufacturerDataDisclaimer(profile)) {
         disclaimers.push(getManufacturerDataDisclaimer('coil performance'));
     }
     let estimatedCFM;
@@ -233,7 +230,7 @@ export function runAirsideEngine(measurements, profile) {
         cfmPerTon = measurements.measuredCFM / profile.nominalTons;
     }
     const deltaTAnalysis = analyzeDeltaT(deltaT, expectedDeltaTResult, measurements.mode);
-    const airflowAnalysis = analyzeAirflow(cfmPerTon, expectedCFMResult, measurements.mode, measurements.measuredCFM !== undefined);
+    const airflowAnalysis = analyzeAirflow(cfmPerTon, expectedCFMResult);
     let staticPressureAnalysis;
     if (measurements.externalStatic !== undefined)
         staticPressureAnalysis = analyzeStaticPressure(measurements.externalStatic, profile.airside.externalStaticPressure);
@@ -242,7 +239,7 @@ export function runAirsideEngine(measurements, profile) {
         statuses.push(staticPressureAnalysis.status);
     const overallStatus = getWorstStatus(statuses);
     // determineOverallFinding is presentation-level; modules/UI should generate human-facing text
-    const recommendations = generateRecommendations(deltaTAnalysis, airflowAnalysis, staticPressureAnalysis, measurements, profile, expectedCFMResult);
+    const recommendations = generateRecommendations(deltaTAnalysis, airflowAnalysis, staticPressureAnalysis, measurements, profile);
     const values = {
         deltaT: round(deltaT, 1),
         expectedDeltaT: expectedDeltaTResult,

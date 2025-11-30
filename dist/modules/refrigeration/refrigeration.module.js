@@ -71,6 +71,7 @@ export class RefrigerationDiagnosticModule {
             subcoolingWaterCooled: CONSTANTS.SUBCOOLING_WATER_COOLED,
             compressionRatioRange: CONSTANTS.COMPRESSION_RATIO,
             ptOverride: profile.refrigeration.ptOverride,
+            metering: profile.refrigeration.metering,
         };
         return runRefrigerationEngine(measurements, cfg);
     }

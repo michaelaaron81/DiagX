@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { generateHydronicSourceRecommendations } from '../src/modules/hydronic/hydronic-source.recommendations';
 import { validateRecommendation } from '../src/shared/recommendation.schema';
 import { assertRecommendationTextSafe } from './helpers/recommendationGuards';
-import { HydronicSourceEngineResult } from '../src/modules/hydronic/hydronic-source.types';
+import { HydronicSourceEngineResult, HydronicSourceContext } from '../src/modules/hydronic/hydronic-source.types';
 
 function buildBaseResult(
   overrides?: Partial<HydronicSourceEngineResult>,
@@ -31,7 +31,7 @@ function buildBaseResult(
   return { ...base, ...(overrides ?? {}) } as HydronicSourceEngineResult;
 }
 
-const context = { profileId: 'test', tons: 10 } as any;
+const context: HydronicSourceContext = { profileId: 'test', tons: 10 };
 
 describe('HydronicSource recommendations - flag-driven behavior', () => {
   it('emits critical deltaT recommendation when deltaTStatus is critical', () => {

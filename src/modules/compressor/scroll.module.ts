@@ -1,5 +1,4 @@
 import { DiagnosticModule, ValidationResult, Recommendation, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp, formatTemperature } from '../../shared/wshp.types';
-import { WaterCooledUnitProfile } from '../../wshp/wshp.profile';
 import { ScrollCompressorMeasurements, ScrollCompressorResult, ScrollCompressorConfig } from './scroll.types';
 import { runScrollCompressorEngine } from './scroll.engine';
 
@@ -19,7 +18,7 @@ export const scrollCompressorHelp: ModuleHelp<ScrollCompressorMeasurements> = {
     dischargePressure: { field: 'dischargePressure', label: 'Discharge Pressure', description: 'PSIG' },
     suctionTemp: { field: 'suctionTemp', label: 'Suction Temp', description: '°F' },
     dischargeTemp: { field: 'dischargeTemp', label: 'Discharge Temp', description: '°F (optional)' },
-    runningCurrent: { field: 'runningCurrent', label: 'Running Current', description: 'Amps (if measured)' } as any,
+    runningCurrent: { field: 'runningCurrent', label: 'Running Current', description: 'Amps (if measured)' },
     voltage: { field: 'voltage', label: 'Supply Voltage', description: 'Compressor motor supply voltage', units: 'V' },
     isRunning: { field: 'isRunning', label: 'Compressor Running', description: 'Whether compressor was running during measurement', units: 'boolean' },
   },
@@ -34,7 +33,7 @@ export class ScrollCompressorDiagnosticModule implements DiagnosticModule<Scroll
     const errors: string[] = [];
     if (measurements.suctionPressure === undefined) errors.push('suctionPressure required');
     if (measurements.dischargePressure === undefined) errors.push('dischargePressure required');
-    return { valid: errors.length === 0, errors: errors.length ? errors : undefined } as any;
+    return { valid: errors.length === 0, errors: errors.length ? errors : undefined };
   }
 
   diagnose(measurements: ScrollCompressorMeasurements, profile: ScrollCompressorConfig) {
@@ -45,7 +44,8 @@ export class ScrollCompressorDiagnosticModule implements DiagnosticModule<Scroll
     return diagnosis.recommendations;
   }
 
-  summarizeForReport(diagnosis: ScrollCompressorResult, profile: WaterCooledUnitProfile): string {
+  summarizeForReport(diagnosis: ScrollCompressorResult, profile: ScrollCompressorConfig): string {
+    void profile;
     const lines: string[] = [];
     lines.push(`COMPRESSOR (Scroll) - ${diagnosis.status.toUpperCase()}`);
     lines.push('─'.repeat(60));
@@ -63,12 +63,12 @@ export class ScrollCompressorDiagnosticModule implements DiagnosticModule<Scroll
     return lines.join('\n');
   }
 
-  getMeasurementHelp(field: keyof ScrollCompressorMeasurements): MeasurementHelp {
+  getMeasurementHelp(field: keyof ScrollCompressorMeasurements): MeasurementHelp | undefined {
     // help.measurementHelp covers all keys; return it directly (treat missing as programmer error)
-    return (this.help.measurementHelp as any)[field];
+    return this.help.measurementHelp[field] as MeasurementHelp | undefined;
   }
 
-  explainDiagnosis(diagnosis: ScrollCompressorResult): any {
+  explainDiagnosis(diagnosis: ScrollCompressorResult): DiagnosisExplanation {
     const immediate = diagnosis.recommendations.filter((r: Recommendation) => r.severity === 'critical' || r.severity === 'alert').map(r => r.summary || r.rationale || (r.notes && r.notes[0]) || '');
     const diagnostic = diagnosis.recommendations.filter((r: Recommendation) => r.severity === 'advisory').map(r => r.summary || r.rationale || (r.notes && r.notes[0]) || '');
     const repair = diagnosis.recommendations.filter((r: Recommendation) => r.severity === 'info').map(r => r.summary || r.rationale || (r.notes && r.notes[0]) || '');
@@ -80,7 +80,6 @@ export class ScrollCompressorDiagnosticModule implements DiagnosticModule<Scroll
       whatThisMeans: `Scroll compressor status: ${summary}`,
       whyThisHappens: (diagnosis.recommendations || []).slice(0, 3).map(r => r.summary || r.rationale || (r.notes && r.notes[0]) || ''),
       whatToDoNext: { immediate, diagnostic, repair },
-      estimatedTime: immediate.length ? 'Immediate' : diagnostic.length ? '1-2 hours' : 'Routine',
     };
   }
 }

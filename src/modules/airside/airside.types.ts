@@ -1,4 +1,4 @@
-import { DiagnosticStatus, Recommendation, EngineResult } from '../../shared/wshp.types';
+import { DiagnosticStatus, EngineResult } from '../../shared/wshp.types';
 import { WaterCooledUnitProfile } from '../../wshp/wshp.profile';
 
 export interface AirsideMeasurements {

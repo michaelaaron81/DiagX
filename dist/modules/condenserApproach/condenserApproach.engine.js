@@ -71,7 +71,7 @@ export function runCondenserApproachEngine(measurements, context) {
         // prefer liquidLineTemp - ambient when available (actual measured liquid line) otherwise use sat temp
         if (liquidTemp !== null)
             values.condenserApproach = liquidTemp - ambient;
-        else if (values.condensingSatTemp !== null)
+        else if (values.condensingSatTemp != null)
             values.condenserApproach = values.condensingSatTemp - ambient;
     }
     // decide statuses using expectedApproach if provided, otherwise use baseline heuristics
@@ -89,7 +89,7 @@ export function runCondenserApproachEngine(measurements, context) {
         flags.approachStatus = 'ok';
     }
     // subcooling thresholds (liberal defaults)
-    if (values.liquidSubcooling === null) {
+    if (values.liquidSubcooling == null) {
         flags.subcoolingStatus = 'unknown';
     }
     else if (values.liquidSubcooling < 3) {

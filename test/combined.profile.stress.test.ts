@@ -6,10 +6,19 @@ import { runScrollCompressorEngine } from '../src/modules/compressor/scroll.engi
 import { runReversingValveEngine } from '../src/modules/reversingValve/reversing.engine';
 import { runHydronicEngine } from '../src/modules/hydronic/hydronic.engine';
 import { runCondenserApproachEngine } from '../src/modules/condenserApproach/condenserApproach.engine';
+import type { HydronicMeasurements, HydronicProfileConfig } from '../src/modules/hydronic/hydronic.types';
+import type { CondenserApproachMeasurements, CondenserApproachProfile } from '../src/modules/condenserApproach/condenserApproach.types';
 
 // Combined stress scenario (airside problem causing refrigeration effects)
+import type { AirsideMeasurements } from '../src/modules/airside/airside.types';
+import type { RefrigerationMeasurements } from '../src/modules/refrigeration/refrigeration.types';
+import type { ReciprocatingCompressorMeasurements } from '../src/modules/compressor/recip.types';
+import type { ScrollCompressorMeasurements } from '../src/modules/compressor/scroll.types';
+import type { ReversingValveMeasurements } from '../src/modules/reversingValve/reversing.types';
+import type { WaterCooledUnitProfile } from '../src/wshp/wshp.profile';
+
 test('combined profile stress run', () => {
-  const profile: any = {
+  const profile: WaterCooledUnitProfile = {
     id: 'stress-test-1',
     nominalTons: 5,
     airside: { designCFM: { cooling: 2400 }, externalStaticPressure: { design: 0.25, max: 0.6 } },
@@ -19,7 +28,7 @@ test('combined profile stress run', () => {
     reversingValve: { type: 'standard', solenoid: { voltage: 24 } },
   };
 
-  const airMeasurements: any = {
+  const airMeasurements: AirsideMeasurements = {
     mode: 'cooling',
     returnAirTemp: 78,
     supplyAirTemp: 30, // deltaT = 48°F (very high)
@@ -27,7 +36,7 @@ test('combined profile stress run', () => {
     externalStatic: 0.85,
   };
 
-  const refrigerationMeasurements: any = {
+  const refrigerationMeasurements: RefrigerationMeasurements = {
     mode: 'cooling',
     suctionPressure: 70,  // low suction pressure
     dischargePressure: 360,
@@ -39,7 +48,7 @@ test('combined profile stress run', () => {
     condensingPressure: 345,
   };
 
-  const recipMeasurements: any = {
+  const recipMeasurements: ReciprocatingCompressorMeasurements = {
     dischargePressure: 360,
     suctionPressure: 70,
     suctionTemp: 60,
@@ -48,7 +57,7 @@ test('combined profile stress run', () => {
     unloadedCylinders: 0,
   };
 
-  const scrollMeasurements: any = {
+  const scrollMeasurements: ScrollCompressorMeasurements = {
     suctionPressure: 70,
     dischargePressure: 360,
     suctionTemp: 60,
@@ -56,7 +65,7 @@ test('combined profile stress run', () => {
     dischargeTemp: 240,
   };
 
-  const reversingMeasurements: any = {
+  const reversingMeasurements: ReversingValveMeasurements = {
     requestedMode: 'cooling',
     reversingValvePortTemps: { dischargeInlet: 200, suctionReturn: 65, indoorCoilLine: 190, outdoorCoilLine: 70 },
     suctionPressure: 70,
@@ -69,8 +78,26 @@ test('combined profile stress run', () => {
   const rec = runReciprocatingCompressorEngine(recipMeasurements, profile);
   const scroll = runScrollCompressorEngine(scrollMeasurements, profile);
   const rev = runReversingValveEngine(reversingMeasurements, profile);
-  const hyd = runHydronicEngine(refrigerationMeasurements, { profile: { designFlowGPM: profile.waterSide.flowRate } });
-  const condenser = runCondenserApproachEngine({ ambientTemp: refrigerationMeasurements.ambientTemp, condensingPressure: refrigerationMeasurements.condensingPressure, liquidLineTemp: refrigerationMeasurements.liquidTemp }, { profile: { refrigerantType: profile.refrigeration.refrigerant } as any });
+
+  const hydMeasurements: HydronicMeasurements = {
+    enteringWaterTemp: refrigerationMeasurements.enteringWaterTemp ?? null,
+    leavingWaterTemp: refrigerationMeasurements.leavingWaterTemp ?? null,
+    flowRateGPM: profile.waterSide.flowRate,
+  };
+  const hydProfile: HydronicProfileConfig = {
+    designFlowGPM: profile.waterSide.flowRate,
+  };
+  const hyd = runHydronicEngine(hydMeasurements, { profile: hydProfile });
+
+  const condenserMeasurements: CondenserApproachMeasurements = {
+    ambientTemp: refrigerationMeasurements.ambientTemp ?? null,
+    condensingPressure: refrigerationMeasurements.condensingPressure ?? null,
+    liquidLineTemp: refrigerationMeasurements.liquidTemp ?? null,
+  };
+  const condenserProfile: CondenserApproachProfile = {
+    refrigerantType: profile.refrigeration.refrigerantType as string,
+  };
+  const condenser = runCondenserApproachEngine(condenserMeasurements, { profile: condenserProfile });
 
   console.log('\n--- COMBINED STRESS RUN ---');
   console.log('Airside flags:', air.flags);

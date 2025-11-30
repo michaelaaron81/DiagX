@@ -2,7 +2,7 @@ import { HydronicMeasurements, HydronicProfileConfig, HydronicEngineResult } fro
 import { generateHydronicRecommendations } from './hydronic.recommendations';
 import { DiagnosticStatus, ValidationResult, round } from '../../shared/wshp.types';
 
-export const HYDRONIC_INDUSTRY_EXPECTED = { min: 10, ideal: 12, max: 14, source: 'industry' } as any;
+export const HYDRONIC_INDUSTRY_EXPECTED: { min: number; ideal: number; max: number; source: 'industry' } = { min: 10, ideal: 12, max: 14, source: 'industry' };
 
 export function getExpectedHydronicDeltaT(profile: HydronicProfileConfig) {
   if (profile && profile.expectedDeltaT) return profile.expectedDeltaT;
@@ -19,7 +19,7 @@ export function validateHydronicMeasurements(measurements: HydronicMeasurements)
   return { valid: errors.length === 0, ok: errors.length === 0, errors: errors.length ? errors : undefined, warnings };
 }
 
-function analyzeDeltaT(deltaT: number | null, expected: any): { status: DiagnosticStatus } {
+function analyzeDeltaT(deltaT: number | null, expected: { min: number; ideal: number; max: number; source?: string }): { status: DiagnosticStatus } {
   if (deltaT === null) return { status: 'unknown' as DiagnosticStatus };
 
   // extreme cases
@@ -90,7 +90,7 @@ export function runHydronicEngine(measurements: HydronicMeasurements, context: {
 
   // attach recommendations from helper so engine-level runs include recs for audits/gap-scans
   try {
-    (result as any).recommendations = generateHydronicRecommendations(result as any, { profile });
+    result.recommendations = generateHydronicRecommendations(result, { profile });
   } catch (e) {
     // ignore
   }

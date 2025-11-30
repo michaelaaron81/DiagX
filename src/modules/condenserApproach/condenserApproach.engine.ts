@@ -1,5 +1,6 @@
 import { getRefrigerantData, isValidRefrigerant, PTChartData } from '../refrigeration/refrigerantData';
-import { CondenserApproachMeasurements, CondenserApproachProfile, CondenserApproachResult } from './condenserApproach.types';
+import { CondenserApproachMeasurements, CondenserApproachProfile, CondenserApproachResult, CondenserApproachValues, CondenserApproachFlags } from './condenserApproach.types';
+import { DiagnosticStatus } from '../../shared/wshp.types';
 import { generateCondenserApproachRecommendations } from './condenserApproach.recommendations';
 
 // very small helper: linear interpolation over PT chart where x=temperature,y=pressure in sample dataset
@@ -32,13 +33,13 @@ function interpolatePTForPressure(pt: PTChartData, pressure: number): number | n
 export function runCondenserApproachEngine(measurements: CondenserApproachMeasurements, context: { profile?: CondenserApproachProfile }): CondenserApproachResult {
   const { profile } = context || {};
 
-  const values: any = {
+  const values: CondenserApproachValues = {
     condenserApproach: null,
     condensingSatTemp: null,
     liquidSubcooling: null,
   };
 
-  const flags: any = {
+  const flags: CondenserApproachFlags = {
     approachStatus: 'unknown',
     subcoolingStatus: 'unknown',
     refrigerantProfile: 'standard',
@@ -76,7 +77,7 @@ export function runCondenserApproachEngine(measurements: CondenserApproachMeasur
   if (condP !== null && ambient !== null) {
     // prefer liquidLineTemp - ambient when available (actual measured liquid line) otherwise use sat temp
     if (liquidTemp !== null) values.condenserApproach = liquidTemp - ambient;
-    else if (values.condensingSatTemp !== null) values.condenserApproach = values.condensingSatTemp - ambient;
+    else if (values.condensingSatTemp != null) values.condenserApproach = values.condensingSatTemp - ambient;
   }
 
   // decide statuses using expectedApproach if provided, otherwise use baseline heuristics
@@ -93,7 +94,7 @@ export function runCondenserApproachEngine(measurements: CondenserApproachMeasur
   }
 
   // subcooling thresholds (liberal defaults)
-  if (values.liquidSubcooling === null) {
+  if (values.liquidSubcooling == null) {
     flags.subcoolingStatus = 'unknown';
   } else if (values.liquidSubcooling < 3) {
     flags.subcoolingStatus = 'critical';
@@ -107,7 +108,7 @@ export function runCondenserApproachEngine(measurements: CondenserApproachMeasur
 
   // result status: one of flags is critical -> critical, else alert->alert, else warning->warning, else ok
   const combined = [flags.approachStatus, flags.subcoolingStatus];
-  let status: any = 'ok';
+  let status: DiagnosticStatus = 'ok';
   if (combined.includes('critical')) status = 'critical';
   else if (combined.includes('alert')) status = 'alert';
   else if (combined.includes('warning')) status = 'warning';
@@ -120,7 +121,7 @@ export function runCondenserApproachEngine(measurements: CondenserApproachMeasur
   };
 
   try {
-    (result as any).recommendations = generateCondenserApproachRecommendations(result as any);
+    result.recommendations = generateCondenserApproachRecommendations(result);
   } catch (e) {
     // ignore
   }

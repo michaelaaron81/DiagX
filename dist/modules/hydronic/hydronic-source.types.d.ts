@@ -27,6 +27,7 @@ export interface HydronicSourceProfileConfig {
         max: number;
         source?: 'industry' | 'nameplate_calculated' | 'manufacturer';
     };
+    designFlowGPM?: number | null;
     manufacturerExpectedEWTRange?: {
         min: number;
         max: number;

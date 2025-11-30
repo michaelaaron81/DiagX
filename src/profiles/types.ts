@@ -11,11 +11,11 @@ export interface WaterSideProfile {
 }
 
 export interface CombinedProfile extends BaseProfile {
-  airside?: any;
+  airside?: Record<string, unknown> | undefined;
   waterSide?: WaterSideProfile;
-  refrigeration?: any;
-  compressor?: any;
-  electrical?: any;
+  refrigeration?: Record<string, unknown> | undefined;
+  compressor?: Record<string, unknown> | undefined;
+  electrical?: Record<string, unknown> | undefined;
 }
 
 export default CombinedProfile;

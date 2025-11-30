@@ -10,7 +10,7 @@ export declare class ReversingValveDiagnosticModule implements DiagnosticModule<
     diagnose(measurements: ReversingValveMeasurements, profile: WaterCooledUnitProfile): ReversingValveDiagnosis;
     getRecommendations(diagnosis: ReversingValveDiagnosis): import("../../shared/wshp.types").Recommendation[];
     summarizeForReport(diagnosis: ReversingValveDiagnosis, profile: WaterCooledUnitProfile): string;
-    getMeasurementHelp(field: keyof ReversingValveMeasurements): MeasurementHelp;
+    getMeasurementHelp(field: keyof ReversingValveMeasurements): MeasurementHelp | undefined;
     explainDiagnosis(diagnosis: ReversingValveDiagnosis): DiagnosisExplanation;
 }
 export declare const reversingValveModule: ReversingValveDiagnosticModule;

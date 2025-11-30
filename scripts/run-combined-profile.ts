@@ -4,13 +4,13 @@ import { runReciprocatingCompressorEngine } from '../src/modules/compressor/reci
 import { runScrollCompressorEngine } from '../src/modules/compressor/scroll.engine';
 import { runReversingValveEngine } from '../src/modules/reversingValve/reversing.engine';
 
-function print(title: string, obj: any) {
+function print(title: string, obj: Record<string, unknown>) {
   console.log('\n---- ' + title + ' ----');
   console.log(JSON.stringify(obj, null, 2));
 }
 
 // Build a profile for a 5-ton unit with typical nameplate
-const profile: any = {
+const profile: Record<string, unknown> = {
   id: 'stress-test-1',
   nominalTons: 5,
   airside: { designCFM: { cooling: 2400 }, externalStaticPressure: { design: 0.25, max: 0.6 } },
@@ -20,7 +20,7 @@ const profile: any = {
 };
 
 // Scenario: airside severely restricted -> high delta T / low airflow
-const airMeasurements: any = {
+const airMeasurements: Record<string, unknown> = {
   mode: 'cooling',
   returnAirTemp: 78,
   supplyAirTemp: 30, // deltaT = 48°F (very high)
@@ -30,7 +30,7 @@ const airMeasurements: any = {
 
 // Hypothesis: severe airside restriction -> reduced load on evaporator and possible low refrigerant heat transfer
 // We'll feed refrigeration some measurements that are plausibly coupled
-const refrigerationMeasurements: any = {
+const refrigerationMeasurements: Record<string, unknown> = {
   mode: 'cooling',
   suctionPressure: 70,  // low suction pressure
   dischargePressure: 360,
@@ -41,7 +41,7 @@ const refrigerationMeasurements: any = {
 };
 
 // Compressors - provide measurements that simulate normal load but allow us to show interactions
-const recipMeasurements: any = {
+const recipMeasurements: Record<string, unknown> = {
   dischargePressure: 360,
   suctionPressure: 70,
   suctionTemp: 60,
@@ -50,7 +50,7 @@ const recipMeasurements: any = {
   unloadedCylinders: 0,
 };
 
-const scrollMeasurements: any = {
+const scrollMeasurements: Record<string, unknown> = {
   suctionPressure: 70,
   dischargePressure: 360,
   suctionTemp: 60,
@@ -59,7 +59,7 @@ const scrollMeasurements: any = {
 };
 
 // Reversing valve scenario: normal solenoid voltage, but temperatures might show mismatches
-const reversingMeasurements: any = {
+const reversingMeasurements: Record<string, unknown> = {
   requestedMode: 'cooling',
   reversingValvePortTemps: { dischargeInlet: 200, suctionReturn: 65, indoorCoilLine: 190, outdoorCoilLine: 70 },
   suctionPressure: 70,
@@ -74,13 +74,13 @@ print('Airside Result', airResult);
 const refResult = runRefrigerationEngine(refrigerationMeasurements, profile.refrigeration);
 print('Refrigeration Result', refResult);
 
-const recipResult = runReciprocatingCompressorEngine(recipMeasurements, profile as any);
+const recipResult = runReciprocatingCompressorEngine(recipMeasurements as unknown as Record<string, unknown>, profile as unknown as Record<string, unknown>);
 print('Recip Engine Result', recipResult);
 
-const scrollResult = runScrollCompressorEngine(scrollMeasurements, profile as any);
+const scrollResult = runScrollCompressorEngine(scrollMeasurements as unknown as Record<string, unknown>, profile as unknown as Record<string, unknown>);
 print('Scroll Engine Result', scrollResult);
 
-const revValveResult = runReversingValveEngine(reversingMeasurements, profile as any);
+const revValveResult = runReversingValveEngine(reversingMeasurements as unknown as Record<string, unknown>, profile as unknown as Record<string, unknown>);
 print('Reversing Valve Result', revValveResult);
 
 // Analysis: naive correlation summary

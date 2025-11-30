@@ -1,23 +1,26 @@
-import { DiagnosticModule, ValidationResult, EngineResult } from '../../shared/wshp.types';
+import { DiagnosticModule, ValidationResult } from '../../shared/wshp.types';
 import { generateCondenserApproachRecommendations } from './condenserApproach.recommendations';
 import { runCondenserApproachEngine } from './condenserApproach.engine';
 
-export const condenserApproachModule: DiagnosticModule<any, any, any> = {
+import { CondenserApproachMeasurements, CondenserApproachProfile, CondenserApproachResult } from './condenserApproach.types';
+
+export const condenserApproachModule: DiagnosticModule<CondenserApproachProfile, CondenserApproachMeasurements, CondenserApproachResult> = {
   metadata: { id: 'condenser_approach', name: 'Condenser Approach' },
   help: { measurementHelp: {} },
-  validate(measurements: any, profile: any): ValidationResult {
+  validate(measurements: CondenserApproachMeasurements, profile: CondenserApproachProfile): ValidationResult {
     const errors: string[] = [];
-    // at least ambient or condensing pressure should be provided
-    if (!measurements) return { valid: false, errors: ['missing measurements'] };
-    return { valid: true };
+    if (!measurements) errors.push('missing measurements');
+    if (!profile) errors.push('missing profile');
+    return { valid: errors.length === 0, errors: errors.length ? errors : undefined };
   },
-  diagnose(measurements: any, profile: any) {
+  diagnose(measurements: CondenserApproachMeasurements, profile: CondenserApproachProfile) {
     const result = runCondenserApproachEngine(measurements, { profile });
-    (result as any).recommendations = generateCondenserApproachRecommendations(result as any);
-    return result as any;
+    // result is already strongly typed; module layer provides recommendations if missing
+    result.recommendations = generateCondenserApproachRecommendations(result);
+    return result;
   },
-  getRecommendations(diagnosis: any) {
-    return generateCondenserApproachRecommendations(diagnosis as any);
+  getRecommendations(diagnosis: CondenserApproachResult) {
+    return generateCondenserApproachRecommendations(diagnosis);
   },
 };
 

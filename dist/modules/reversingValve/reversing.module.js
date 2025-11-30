@@ -57,9 +57,9 @@ export class ReversingValveDiagnosticModule {
         const criticalRec = (diagnosis.recommendations || []).find(r => r.severity === 'critical');
         const finding = criticalRec ? (criticalRec.summary || criticalRec.rationale || 'Critical issue detected') : (diagnosis.status === 'ok' ? 'Reversing valve appears to be operating normally' : 'See recommendations for details');
         lines.push(`  ${finding}`);
-        const likely = (diagnosis.recommendations || []).find(r => r.priority === 'high' && r.reason) || undefined;
+        const likely = (diagnosis.recommendations || []).find(r => r.severity === 'alert' && (r.rationale || r.summary)) || undefined;
         if (likely)
-            lines.push(`  ${likely.reason}`);
+            lines.push(`  ${likely.rationale || likely.summary}`);
         return lines.join('\n');
     }
     getMeasurementHelp(field) {

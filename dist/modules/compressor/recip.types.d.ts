@@ -53,4 +53,4 @@ export interface ReciprocatingCompressorResult extends EngineResult<Reciprocatin
     disclaimers: string[];
     recommendations: Recommendation[];
 }
-export type ReciprocatingCompressorConfig = any;
+export type ReciprocatingCompressorConfig = Record<string, unknown> | unknown;

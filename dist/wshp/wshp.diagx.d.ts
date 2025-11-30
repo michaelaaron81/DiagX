@@ -5,10 +5,10 @@ export interface WshpDiagxInput {
     profile: WaterCooledUnitProfile;
     measurements: {
         refrigeration?: RefrigerationMeasurements;
-        airside?: any;
-        recipCompressor?: any;
-        scrollCompressor?: any;
-        reversingValve?: any;
+        airside?: Record<string, unknown>;
+        recipCompressor?: Record<string, unknown>;
+        scrollCompressor?: Record<string, unknown>;
+        reversingValve?: Record<string, unknown>;
     };
 }
 export interface WshpDiagxResult {

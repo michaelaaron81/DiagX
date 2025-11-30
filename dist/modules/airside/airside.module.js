@@ -58,6 +58,9 @@ export class AirsideDiagnosticModule {
         lines.push(`AIRSIDE - ${diagnosis.status.toUpperCase()}`);
         lines.push('─'.repeat(60));
         lines.push(`Mode: ${diagnosis.mode}`);
+        if (profile.model) {
+            lines.push(`Equipment model: ${profile.model}`);
+        }
         lines.push(`Delta T: ${formatTemperature(diagnosis.deltaT)} (expected ${formatTemperature(diagnosis.expectedDeltaT.ideal)}) [${diagnosis.deltaTStatus}]`);
         if (diagnosis.cfmPerTon)
             lines.push(`CFM/Ton: ${diagnosis.cfmPerTon} (expected ${diagnosis.expectedCFMPerTon.ideal}) [${diagnosis.airflowStatus}]`);
@@ -69,14 +72,15 @@ export class AirsideDiagnosticModule {
         if (diagnosis.totalESP && diagnosis.ratedESP)
             lines.push(`Static: ${diagnosis.totalESP} in W.C. (max ${diagnosis.ratedESP.max})`);
         lines.push('');
-        const criticalRec = (diagnosis.recommendations || []).find(r => r.priority === 'critical' || r.severity === 'critical');
-        const finding = criticalRec ? (criticalRec.title || criticalRec.description || 'Critical issue detected') : (diagnosis.status === 'ok' ? 'Airside operating normally - see recommendations for details' : 'See recommendations for diagnostic details');
+        const criticalRec = (diagnosis.recommendations || []).find(r => r.severity === 'critical');
+        const finding = criticalRec ? (criticalRec.summary || criticalRec.rationale || 'Critical issue detected') : (diagnosis.status === 'ok' ? 'Airside operating normally - see recommendations for details' : 'See recommendations for diagnostic details');
         lines.push(`Finding: ${finding}`);
         return lines.join('\n');
     }
     getMeasurementHelp(field) {
         // We expect `this.help.measurementHelp` to provide entries for all measurement keys.
-        return this.help.measurementHelp[field];
+        const mh = this.help.measurementHelp;
+        return mh[field];
     }
     explainDiagnosis(diagnosis) {
         // Provide a richer, structured explanation amenable to UI consumption.
@@ -94,7 +98,6 @@ export class AirsideDiagnosticModule {
                 diagnostic,
                 repair,
             },
-            estimatedTime: immediate.length ? 'Immediate' : (diagnostic.length ? '1-2 hours' : 'Routine'),
         };
     }
 }

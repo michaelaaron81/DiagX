@@ -2,6 +2,7 @@ import { HydronicEngineResult, HydronicEngineContext } from './hydronic.types';
 import { Recommendation } from '../../shared/wshp.types';
 
 export function generateHydronicRecommendations(result: HydronicEngineResult, context?: HydronicEngineContext): Recommendation[] {
+  void context;
   const recs: Recommendation[] = [];
   const { flags, values, status } = result;
 

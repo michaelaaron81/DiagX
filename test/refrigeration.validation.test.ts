@@ -1,16 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { validateRefrigerationMeasurements } from '../src/modules/refrigeration/refrigeration.validation';
+import type { RefrigerationMeasurements } from '../src/modules/refrigeration/refrigeration.types';
 
 describe('refrigeration validation (phase 1)', () => {
   it('flags missing critical field with severity error', () => {
     // missing suctionPressure should produce ok === false and an error issue
-    const m: any = {
+    const m = {
       mode: 'cooling',
       // suctionPressure: missing
       dischargePressure: 150,
       suctionTemp: 80,
       liquidTemp: 90,
-    };
+    } as unknown as RefrigerationMeasurements;
 
     const r = validateRefrigerationMeasurements(m);
     expect(r.ok).toBe(false);

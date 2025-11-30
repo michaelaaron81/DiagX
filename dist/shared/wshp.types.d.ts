@@ -10,15 +10,8 @@ export interface Recommendation {
     rationale?: string;
     notes?: string[];
     requiresShutdown?: boolean;
-    priority?: 'critical' | 'high' | 'medium' | 'low' | 'monitor' | 'alert' | 'warning';
-    module?: string;
-    code?: string;
-    title?: string;
-    description?: string;
-    reason?: string;
-    safetyWarning?: string;
 }
-export interface EngineResult<V extends Record<string, any> = Record<string, number>, F extends Record<string, any> = Record<string, boolean>> {
+export interface EngineResult<V extends object = Record<string, unknown>, F extends object = Record<string, unknown>> {
     status: DiagnosticStatus;
     values: V;
     flags: F;
@@ -40,7 +33,7 @@ export interface MeasurementHelp {
     tools?: string[];
     safetyWarnings?: string[];
 }
-export interface ModuleHelp<T = any> {
+export interface ModuleHelp<T = Record<string, unknown>> {
     measurementHelp: Partial<Record<keyof T, MeasurementHelp>> | Record<string, MeasurementHelp>;
     diagnosticHelp?: {
         whatWeCheck?: string;
@@ -55,7 +48,7 @@ export interface ModuleHelp<T = any> {
     detailedHelpPath?: string;
 }
 export interface DiagnosisExplanation {
-    [key: string]: any;
+    [key: string]: unknown;
 }
 export interface ActionSteps {
     actions: string[];
@@ -75,7 +68,7 @@ export interface DiagnosticContext {
     timestamp?: string;
     debug?: boolean;
 }
-export interface DiagnosticModule<TProfile = any, TMeasurements = any, TDiagnosis = any> {
+export interface DiagnosticModule<TProfile = Record<string, unknown>, TMeasurements = Record<string, unknown>, TDiagnosis = Record<string, unknown>> {
     metadata: ModuleMetadata;
     help: ModuleHelp<TMeasurements>;
     validate(measurements: TMeasurements, profile: TProfile): ValidationResult;
@@ -83,7 +76,7 @@ export interface DiagnosticModule<TProfile = any, TMeasurements = any, TDiagnosi
     getRecommendations?(diagnosis: TDiagnosis, profile: TProfile): Recommendation[];
     summarizeForReport?(diagnosis: TDiagnosis, profile: TProfile): string;
     getMeasurementHelp?(field: keyof TMeasurements): MeasurementHelp | undefined;
-    explainDiagnosis?(diagnosis: TDiagnosis): DiagnosisExplanation | any;
+    explainDiagnosis?(diagnosis: TDiagnosis): DiagnosisExplanation | unknown;
 }
 export declare function formatPressure(p: number): string;
 export declare function formatCurrent(a: number): string;

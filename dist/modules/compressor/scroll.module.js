@@ -41,6 +41,7 @@ export class ScrollCompressorDiagnosticModule {
         return diagnosis.recommendations;
     }
     summarizeForReport(diagnosis, profile) {
+        void profile;
         const lines = [];
         lines.push(`COMPRESSOR (Scroll) - ${diagnosis.status.toUpperCase()}`);
         lines.push('─'.repeat(60));
@@ -73,7 +74,6 @@ export class ScrollCompressorDiagnosticModule {
             whatThisMeans: `Scroll compressor status: ${summary}`,
             whyThisHappens: (diagnosis.recommendations || []).slice(0, 3).map(r => r.summary || r.rationale || (r.notes && r.notes[0]) || ''),
             whatToDoNext: { immediate, diagnostic, repair },
-            estimatedTime: immediate.length ? 'Immediate' : diagnostic.length ? '1-2 hours' : 'Routine',
         };
     }
 }

@@ -5,7 +5,7 @@ import { runAirsideEngine } from '../src/modules/airside/airside.engine';
 
 describe('airside module - integration tests', () => {
   it('validate catches missing temps', () => {
-    const v = airsideModule.validate({} as any);
+    const v = airsideModule.validate({} as unknown as Record<string, unknown>);
     expect(v.valid).toBeFalsy();
   });
 
@@ -17,11 +17,11 @@ describe('airside module - integration tests', () => {
 
   it('diagnose delegates to engine and explainDiagnosis returns structured object', () => {
     const f = JSON.parse(readFileSync('test/fixtures/airside/nominal.json', 'utf-8'));
-    const diag = airsideModule.diagnose(f.measurements.airside, f.profile as any);
-    const engine = runAirsideEngine(f.measurements.airside, f.profile as any);
+    const diag = airsideModule.diagnose(f.measurements.airside, f.profile as unknown as Record<string, unknown>);
+    const engine = runAirsideEngine(f.measurements.airside, f.profile as unknown as Record<string, unknown>);
     expect(diag.deltaT).toBe(engine.deltaT);
 
-    const exp = airsideModule.explainDiagnosis(diag as any);
+    const exp = airsideModule.explainDiagnosis(diag as unknown as Record<string, unknown>);
     expect(exp).toHaveProperty('finding');
     expect(exp).toHaveProperty('whatToDoNext');
     expect(Array.isArray(exp.whatToDoNext.immediate)).toBeTruthy();

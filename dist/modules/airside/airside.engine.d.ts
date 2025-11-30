@@ -1,8 +1,18 @@
 import { AirsideMeasurements, AirsideEngineResult, AirsideConfig } from './airside.types';
-import { Recommendation } from '../../shared/wshp.types';
-export declare function getExpectedDeltaT(profile: AirsideConfig, mode: 'cooling' | 'heating' | 'fan_only'): any;
-export declare function getExpectedCFMPerTon(profile: AirsideConfig, mode: 'cooling' | 'heating' | 'fan_only'): any;
-export declare function requiresManufacturerDataDisclaimer(profile: AirsideConfig, subject: string): boolean;
+import { DiagnosticStatus, Recommendation } from '../../shared/wshp.types';
+export declare function getExpectedDeltaT(profile: AirsideConfig, mode: 'cooling' | 'heating' | 'fan_only'): {
+    min: number;
+    ideal: number;
+    max: number;
+    source: string;
+};
+export declare function getExpectedCFMPerTon(profile: AirsideConfig, mode: 'cooling' | 'heating' | 'fan_only'): {
+    min: number;
+    ideal: number;
+    max: number;
+    source: string;
+};
+export declare function requiresManufacturerDataDisclaimer(profile: AirsideConfig): boolean;
 export declare function getManufacturerDataDisclaimer(subject: string): string;
 export declare function validateAirsideMeasurements(measurements: AirsideMeasurements): {
     valid: boolean;
@@ -15,5 +25,11 @@ export declare function validateAirsideMeasurements(measurements: AirsideMeasure
     errors: string[] | undefined;
     warnings: string[];
 };
-export declare function generateRecommendations(deltaTAnalysis: any, airflowAnalysis: any, staticPressureAnalysis: any, measurements: AirsideMeasurements, profile: AirsideConfig, expectedCFM: any): Recommendation[];
+export declare function generateRecommendations(deltaTAnalysis: {
+    status: DiagnosticStatus;
+}, airflowAnalysis: {
+    status: DiagnosticStatus;
+}, staticPressureAnalysis: {
+    status: DiagnosticStatus;
+} | undefined, measurements: AirsideMeasurements, profile: AirsideConfig): Recommendation[];
 export declare function runAirsideEngine(measurements: AirsideMeasurements, profile: AirsideConfig): AirsideEngineResult;

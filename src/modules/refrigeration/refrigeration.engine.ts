@@ -128,7 +128,11 @@ export function validateRefrigerationMeasurements(measurements: RefrigerationMea
   return { valid, ok: valid, errors: valid ? undefined : errors, warnings };
 }
 
-function analyzeSuperheat(superheat: number, mode: 'cooling' | 'heating', metering: any) {
+function analyzeSuperheat(
+  superheat: number,
+  mode: 'cooling' | 'heating',
+  metering: RefrigerationConfig['metering'] | undefined,
+): { status: DiagnosticStatus } {
   const meteringType = mode === 'cooling' ? metering?.cooling?.type : metering?.heating?.type;
   const isTXV = meteringType === 'txv' || meteringType === 'eev' || meteringType === 'bidirectional_txv';
 
@@ -142,7 +146,7 @@ function analyzeSuperheat(superheat: number, mode: 'cooling' | 'heating', meteri
   return { status: 'ok' as DiagnosticStatus };
 }
 
-function analyzeSubcooling(subcooling: number, enteringWaterTemp: number) {
+function analyzeSubcooling(subcooling: number): { status: DiagnosticStatus } {
   const idealRange = CONSTANTS.SUBCOOLING_WATER_COOLED;
   if (subcooling < 3) return { status: 'alert' as DiagnosticStatus };
   if (subcooling < idealRange.min) return { status: 'warning' as DiagnosticStatus };
@@ -171,18 +175,6 @@ function analyzeWaterTransfer(waterDeltaT: number, tons: number, designGPM: numb
   if (waterDeltaT > expectedDeltaT * 1.5) return { status: 'alert' as DiagnosticStatus };
   if (waterDeltaT > maxAcceptable) return { status: 'warning' as DiagnosticStatus };
   return { status: 'ok' as DiagnosticStatus };
-}
-
-function determineOverallFinding(superheat: number, subcooling: number, compressionRatio: number, waterDeltaT: number, mode: 'cooling' | 'heating') {
-  if (superheat < 5) return { overallFinding: 'CRITICAL: Liquid slugging risk - Extremely low superheat', likelyIssue: 'TXV stuck open or severe overcharge' };
-  if (compressionRatio < 2.5) return { overallFinding: 'CRITICAL: Severe internal bypass detected', likelyIssue: 'Reversing valve stuck or compressor valves failed' };
-  if (superheat > 15 && subcooling < 8) return { overallFinding: 'System is UNDERCHARGED - Low refrigerant', likelyIssue: 'Refrigerant leak' };
-  if (superheat < 8 && subcooling > 15) return { overallFinding: 'System is OVERCHARGED - Excess refrigerant', likelyIssue: 'Overcharge' };
-  if (superheat > 15 && subcooling > 15) return { overallFinding: 'Liquid line or metering device RESTRICTION detected', likelyIssue: 'Restricted filter drier or metering device' };
-  if (compressionRatio < 3.5 && superheat > 8 && superheat < 15) return { overallFinding: 'Internal bypass - Reversing valve or compressor issue', likelyIssue: 'Reversing valve leaking or compressor losing efficiency' };
-  if (compressionRatio > 6.0) return { overallFinding: 'Excessive head pressure detected', likelyIssue: 'Water flow restricted, fouled condenser or high entering water temp' };
-  if (superheat >= 8 && superheat <= 15 && subcooling >= 8 && subcooling <= 15 && compressionRatio >= 3.5 && compressionRatio <= 5.5) return { overallFinding: 'Refrigeration circuit operating normally - All parameters within range' };
-  return { overallFinding: 'Some refrigeration parameters out of normal range - See individual findings' };
 }
 
 function getWorstStatus(statuses: DiagnosticStatus[]): DiagnosticStatus {
@@ -319,7 +311,7 @@ function generateRecommendations(
   measurements: RefrigerationMeasurements,
   profile: RefrigerationConfig
 ): Recommendation[] {
-  const recommendations: any[] = [];
+  const recommendations: Recommendation[] = [];
   const refrigerant = profile.refrigerant;
 
   if (superheatAnalysis.status === 'critical') {
@@ -380,11 +372,11 @@ export function runRefrigerationEngine(measurements: RefrigerationMeasurements, 
   // Allow an optional, user-supplied PT table override in the config (do NOT commit OEM tables to repo)
   let suctionSatTemp = getSaturationTemp(measurements.suctionPressure, refrigerant);
   let dischargeSatTemp = getSaturationTemp(measurements.dischargePressure, refrigerant);
-  if ((config as any).ptOverride) {
+  if (config.ptOverride) {
     // Only accept a manual PT override when the refrigerant is explicitly set to 'OTHER'
     const refrigerantRaw = String(config.refrigerant || '').toUpperCase();
     if (refrigerantRaw === 'OTHER') {
-      const pt: any = (config as any).ptOverride;
+      const pt = config.ptOverride;
       const sTemp = interpolatePT(measurements.suctionPressure, pt);
       const dTemp = interpolatePT(measurements.dischargePressure, pt);
       if (sTemp !== null) suctionSatTemp = sTemp;
@@ -406,10 +398,13 @@ export function runRefrigerationEngine(measurements: RefrigerationMeasurements, 
   let dischargeSuperheat: number | undefined = undefined;
   if (measurements.dischargeTemp !== undefined) dischargeSuperheat = measurements.dischargeTemp - dischargeSatTemp;
 
-  const superheatAnalysis = analyzeSuperheat(superheat, measurements.mode, (config as any).metering);
-  const subcoolingAnalysis = analyzeSubcooling(subcooling, measurements.enteringWaterTemp ?? 0);
+  const superheatAnalysis = analyzeSuperheat(superheat, measurements.mode, config.metering);
+  const subcoolingAnalysis = analyzeSubcooling(subcooling);
   const compressionRatioAnalysis = analyzeCompressionRatio(compressionRatio);
   const waterTransferAnalysis = analyzeWaterTransfer(waterDeltaT, config.nominalTons, config.designWaterFlowGPM);
+
+  // Legacy helper retained for backward-compatibility; result is not used in the engine core.
+  generateRecommendations(superheatAnalysis, subcoolingAnalysis, compressionRatioAnalysis, waterTransferAnalysis, measurements, config);
 
   const statuses = [superheatAnalysis.status, subcoolingAnalysis.status, compressionRatioAnalysis.status, waterTransferAnalysis.status];
   const overallStatus = getWorstStatus(statuses);

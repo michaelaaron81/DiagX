@@ -19,6 +19,9 @@ export interface RefrigerationConfig {
   compressionRatioRange: { min: number; ideal: number; max: number };
   // Optional manual PT table override (user-supplied only; don't add OEM tables to repo)
   ptOverride?: PTChartData;
+
+  // Backwards-compatible optional metering object (profile may include a 'metering' block)
+  metering?: { cooling?: { type: 'txv' | 'eev' | 'fixed' | 'bidirectional_txv' }; heating?: { type: 'txv' | 'eev' | 'fixed' | 'bidirectional_txv' } };
 }
 
 export interface RefrigerationMeasurements {

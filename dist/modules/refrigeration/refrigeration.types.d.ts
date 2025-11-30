@@ -33,6 +33,14 @@ export interface RefrigerationConfig {
         max: number;
     };
     ptOverride?: PTChartData;
+    metering?: {
+        cooling?: {
+            type: 'txv' | 'eev' | 'fixed' | 'bidirectional_txv';
+        };
+        heating?: {
+            type: 'txv' | 'eev' | 'fixed' | 'bidirectional_txv';
+        };
+    };
 }
 export interface RefrigerationMeasurements {
     mode: 'cooling' | 'heating';

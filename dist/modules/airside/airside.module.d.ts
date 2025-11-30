@@ -1,4 +1,4 @@
-import { DiagnosticModule, ValidationResult, Recommendation, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp } from '../../shared/wshp.types';
+import { DiagnosticModule, ValidationResult, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp } from '../../shared/wshp.types';
 import { WaterCooledUnitProfile } from '../../wshp/wshp.profile';
 import { AirsideMeasurements, AirsideEngineResult } from './airside.types';
 export declare const airsideMetadata: ModuleMetadata;
@@ -8,7 +8,7 @@ export declare class AirsideDiagnosticModule implements DiagnosticModule<WaterCo
     help: ModuleHelp<AirsideMeasurements>;
     validate(measurements: AirsideMeasurements): ValidationResult;
     diagnose(measurements: AirsideMeasurements, profile: WaterCooledUnitProfile): AirsideEngineResult;
-    getRecommendations(diagnosis: AirsideEngineResult): Recommendation[];
+    getRecommendations(diagnosis: AirsideEngineResult): import("../../shared/wshp.types").Recommendation[];
     summarizeForReport(diagnosis: AirsideEngineResult, profile: WaterCooledUnitProfile): string;
     getMeasurementHelp(field: keyof AirsideMeasurements): MeasurementHelp | undefined;
     explainDiagnosis(diagnosis: AirsideEngineResult): DiagnosisExplanation;

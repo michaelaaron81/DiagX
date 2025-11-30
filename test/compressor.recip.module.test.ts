@@ -1,12 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { runReciprocatingCompressorEngine } from '../src/modules/compressor/recip.engine';
+import type { ReciprocatingCompressorMeasurements } from '../src/modules/compressor/recip.types';
 import { recipCompressorModule } from '../src/modules/compressor/recip.module';
 
 describe('reciprocating compressor module - integration tests', () => {
   it('validate should return invalid when required fields missing', () => {
-    const missing = { compressor: { compressorId: 'X1' } } as any;
-    const v = recipCompressorModule.validate(missing.compressor);
+    const missing = { compressor: { compressorId: 'X1' } } as unknown as { compressor?: ReciprocatingCompressorMeasurements };
+    const v = recipCompressorModule.validate(missing.compressor as ReciprocatingCompressorMeasurements);
     expect(v.valid).toBeFalsy();
     expect(Array.isArray(v.errors)).toBeTruthy();
   });

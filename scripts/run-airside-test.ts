@@ -24,7 +24,7 @@ const measurements = {
 };
 
 try {
-  const result = runAirsideEngine(measurements as any, profile as any);
+  const result = runAirsideEngine(measurements as unknown as Record<string, unknown>, profile as unknown as Record<string, unknown>);
   console.log(JSON.stringify(result, null, 2));
 } catch (err) {
   console.error('engine threw:', err);

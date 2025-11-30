@@ -19,7 +19,6 @@ Diagx-Omen/
  dist/
  docs/
  docs/backups/
- Engines to be extracted/
  node_modules/
  scripts/
    check-oem.js
@@ -59,7 +58,6 @@ Diagx-Omen/
 - `tsconfig.json`  TypeScript compiler configuration  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/tsconfig.json
 
-- `vitest.config.ts`  Vitest runner configuration & cache directory  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/vitest.config.ts
 
 - `.eslintrc.cjs`  ESLint configuration  
@@ -105,11 +103,11 @@ Notes and highlights:
 - `docs/process/NO_OEM_IOM.md`  policy on excluding OEM/IOM tables from the repo  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/NO_OEM_IOM.md
 
-- `docs/process/DiagX_engineer_seed_V1.md`  engineer-facing seed and development guidance  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_engineer_seed_V1.md
+`docs/process/DiagX_engineer_seed_V2.md`  engineer-facing seed and development guidance  
+  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_engineer_seed_V2.md
 
-- `docs/process/DiagX_master_seed_V3.md`  master seed V3; canonical product/domain behavior spec  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_master_seed_V3.md
+`docs/process/DiagX_master_seed_V4.md`  master seed V4; canonical product/domain behavior spec  
+  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_master_seed_V4.md
 
 - `docs/process/Local_Editor_Guardrails.md`  local editor / VS Code guardrails for DiagX  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/Local_Editor_Guardrails.md

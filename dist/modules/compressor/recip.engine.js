@@ -223,7 +223,7 @@ export function runReciprocatingCompressorEngine(measurements, profile) {
     if (!rla && measurements.compressorCurrent !== undefined)
         disc.push('No RLA in profile; current analysis is limited to absolute value, not % of RLA.');
     // Accept either canonical refrigerantType or older refrigerant value; if OTHER, record a disclaimer
-    const refrigerantFromProfile = profile?.refrigeration?.refrigerantType ?? profile?.refrigeration?.refrigerant;
+    const refrigerantFromProfile = profile?.refrigeration?.refrigerantType ?? undefined;
     const knownRefrigerants = new Set(['R410A', 'R22', 'R134A', 'R407C']);
     const refType = String(refrigerantFromProfile || '').toUpperCase().replace(/-/g, '');
     const refrigerantProfile = refType && knownRefrigerants.has(refType) ? 'standard' : 'unknown';

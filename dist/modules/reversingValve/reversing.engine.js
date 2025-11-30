@@ -74,6 +74,7 @@ function analyzeValvePattern(requestedMode, ports, hotPorts, coldPorts, tempSpre
     return { pattern: 'stuck', status: 'alert' };
 }
 export function generateRecommendations(patternAnalysis, solenoidStatus, measurements, profile) {
+    void profile;
     const recommendations = [];
     if (patternAnalysis.pattern === 'stuck' && patternAnalysis.status === 'critical') {
         recommendations.push({

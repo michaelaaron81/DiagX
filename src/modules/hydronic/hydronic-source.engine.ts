@@ -34,10 +34,12 @@ function computeApproachToAmbient(
 }
 
 import { getExpectedHydronicDeltaT } from './hydronic.engine';
+import type { HydronicProfileConfig } from './hydronic.types';
 
-function analyzeDeltaTForSource(deltaT: number | null, expected: any) {
+function analyzeDeltaTForSource(deltaT: number | null, expected: { min: number; ideal: number; max: number; source?: string } | null) {
   if (deltaT === null) return 'unknown' as const;
   if (deltaT <= 1) return 'critical' as const;
+  if (!expected) return 'unknown' as const;
   if (deltaT < expected.min) return 'alert' as const;
   if (deltaT > expected.max * 1.5) return 'critical' as const;
   if (deltaT > expected.max) return 'alert' as const;
@@ -73,8 +75,12 @@ function evaluateFlags(values: HydronicSourceValues, input: HydronicSourceEngine
   })();
 
   // derive design flow GPM if available, prefer explicit designFlowGPM in profileConfig
-  const expected = getExpectedHydronicDeltaT(profileConfig as any);
-  const designFlowFromProfile = (profileConfig as any)?.designFlowGPM ?? null;
+  const expectedProfile: HydronicProfileConfig = {
+    expectedDeltaT: profileConfig?.designDeltaT ? { ...(profileConfig.designDeltaT as any), source: 'profile' } : undefined,
+    designFlowGPM: profileConfig?.designFlowGPM ?? undefined,
+  };
+  const expected = getExpectedHydronicDeltaT(expectedProfile);
+  const designFlowFromProfile = profileConfig?.designFlowGPM ?? null;
   const designFlowEstimated = (input.context.tons && expected && expected.ideal)
     ? Math.round((input.context.tons * 12000) / (expected.ideal * 500))
     : null;
@@ -154,11 +160,16 @@ export function runHydronicSourceEngine(
   );
 
   // derive design flow for normalized index
-  const expected = getExpectedHydronicDeltaT((input.context && input.context.profileConfig) as any);
+  // Map profileConfig.designDeltaT (which may include manufacturer/nameplate source) into HydronicProfileConfig shape
+  const expectedProfileFromContext: HydronicProfileConfig = {
+    expectedDeltaT: input.context.profileConfig?.designDeltaT ? { ...(input.context.profileConfig.designDeltaT as any), source: 'profile' } : undefined,
+    designFlowGPM: input.context.profileConfig?.designFlowGPM ?? undefined,
+  };
+  const expected = getExpectedHydronicDeltaT(expectedProfileFromContext);
   const designFlowEstimated = (input.context.tons && expected && expected.ideal)
     ? Math.round((input.context.tons * 12000) / (expected.ideal * 500))
     : null;
-  const designFlowGPM = (input.context && (input.context as any).profileConfig && (input.context as any).profileConfig.designFlowGPM) || designFlowEstimated || null;
+  const designFlowGPM = input.context.profileConfig?.designFlowGPM ?? designFlowEstimated ?? null;
 
   const values: HydronicSourceValues = {
     enteringWaterTemp: enteringWaterTemp ?? null,

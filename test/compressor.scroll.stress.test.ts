@@ -5,7 +5,7 @@ import { WaterCooledUnitProfile } from '../src/wshp/wshp.profile';
 import fs from 'fs';
 
 // Stress test scenarios for scroll compressor engine
-const scrollScenarios: { name: string; measurements: ScrollCompressorMeasurements; profile: any }[] = [
+const scrollScenarios: { name: string; measurements: ScrollCompressorMeasurements; profile: WaterCooledUnitProfile }[] = [
   {
     name: 'Normal Operation - OK Status',
     measurements: {
@@ -122,4 +122,3 @@ test('scroll compressor stress test - generate detailed log', () => {
   // Basic assertion to ensure test runs
   expect(scrollScenarios.length).toBeGreaterThan(0);
 });
-

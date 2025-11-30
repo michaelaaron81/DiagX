@@ -1,6 +1,7 @@
 #!/usr/bin/env ts-node
 import { program } from 'commander';
 import fs from 'fs';
+// path import no longer required here
 import { saveEntry, loadEntry, listEntries, removeEntry } from './localOverrides';
 program.name('diagx-pt').description('Manage local, ephemeral PT override tables (stored locally, not in repo)');
 program.command('import')
@@ -21,7 +22,12 @@ program.command('import')
         console.error('invalid json');
         process.exit(3);
     }
-    const entry = { profileId, pt, description: opts.description, savedAt: new Date().toISOString() };
+    // Validate pt chart shape: array of [number, number]
+    if (!Array.isArray(pt) || !pt.every((r) => Array.isArray(r) && r.length >= 2 && typeof r[0] === 'number' && typeof r[1] === 'number')) {
+        console.error('PT file must be a JSON array of [tempF, pressurePSIG] pairs');
+        process.exit(3);
+    }
+    const entry = { profileId, pt: pt, description: opts.description, savedAt: new Date().toISOString() };
     saveEntry(entry);
     console.log(`Saved PT override for profile ${profileId} (ephemeral local only)`);
 });

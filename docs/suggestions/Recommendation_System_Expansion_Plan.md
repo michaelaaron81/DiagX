@@ -23,9 +23,15 @@ This plan outlines a comprehensive strategy to expand and fully flesh out the Di
 - **Maintainability**: Dependency injection, versioning, testing hooks.
 
 ## Information to Include in Recommendations
-Expand to `RecommendationWithContext` with:
-- Core fields: id, category, severity, action, etc.
-- New fields: Confidence score, root cause probability, step-by-step guidance, estimated effort, rationale explanation, troubleshooting flow, related measurements, safety notes, preventive tie-in, user customization.
+Keep the core `Recommendation` object strictly diagnostic (id, domain, severity, intent, summary, rationale, notes, requiresShutdown). Any step-by-step guidance, time/cost estimates, or procedural repair instructions must not be part of the core Recommendation exported by the engines.
+
+If you need richer, actionable artifacts for a planner or downstream workflow, create a separate enriched type (for example `RecommendationWithContext` in a synthesis/planner layer) which may include:
+
+- Contextual metadata: confidence score, related measurements, root-cause probability
+- Planning data (kept out of engine outputs): step-by-step guidance, estimated effort, parts lists, cost estimates, recommended procedure IDs
+- Links to knowledge base: troubleshooting flows, references, and enrichment notes
+
+The synthesis/planner layer is explicitly separate from the diagnostic Recommendation contract and must not be exported by engines or modules that hold to the diagnostic-only safety constraints.
 - Cross-domain: Causal links, system impact, dependencies.
 - Advanced: Predictive insights, alternatives, references.
 

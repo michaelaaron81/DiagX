@@ -1,4 +1,4 @@
-import { ReversingValveMeasurements, ReversingValveDiagnosis, ReversingValveConfig, ReversingValveValues, ReversingValveFlags } from './reversing.types';
+import { ReversingValveMeasurements, ReversingValveDiagnosis, ReversingValveConfig, ReversingValveValues, ReversingValveFlags, ReversingValvePortTemps } from './reversing.types';
 import { ValidationResult, DiagnosticStatus, Recommendation, round } from '../../shared/wshp.types';
 import { WaterCooledUnitProfile, hasReversingValve } from '../../wshp/wshp.profile';
 
@@ -43,7 +43,14 @@ function analyzeSolenoid(actualVoltage: number, ratedVoltage: number) {
   return { status: 'ok' as const };
 }
 
-function analyzeValvePattern(requestedMode: 'cooling' | 'heating', ports: any, hotPorts: string[], coldPorts: string[], tempSpread: number, compressionRatio: number) {
+function analyzeValvePattern(
+  requestedMode: 'cooling' | 'heating',
+  ports: ReversingValvePortTemps,
+  hotPorts: string[],
+  coldPorts: string[],
+  tempSpread: number,
+  compressionRatio: number,
+): { pattern: ReversingValveFlags['patternMatch']; status: DiagnosticStatus } {
   if (tempSpread < 50) {
     return {
       pattern: 'stuck' as const,
@@ -76,7 +83,13 @@ function analyzeValvePattern(requestedMode: 'cooling' | 'heating', ports: any, h
   return { pattern: 'stuck' as const, status: 'alert' as DiagnosticStatus };
 }
 
-export function generateRecommendations(patternAnalysis: any, solenoidStatus: any, measurements: ReversingValveMeasurements, profile: ReversingValveConfig): Recommendation[] {
+export function generateRecommendations(
+  patternAnalysis: { pattern: ReversingValveFlags['patternMatch']; status: DiagnosticStatus },
+  solenoidStatus: ReversingValveFlags['solenoidStatus'] | undefined,
+  measurements: ReversingValveMeasurements,
+  profile: ReversingValveConfig,
+): Recommendation[] {
+  void profile;
   const recommendations: Recommendation[] = [];
   if (patternAnalysis.pattern === 'stuck' && patternAnalysis.status === 'critical') {
     recommendations.push({
@@ -140,7 +153,7 @@ export function generateRecommendations(patternAnalysis: any, solenoidStatus: an
   }
 
   return recommendations.sort((a, b) => {
-    const order: any = { critical: 0, alert: 1, advisory: 2, info: 3 };
+    const order: Record<string, number> = { critical: 0, alert: 1, advisory: 2, info: 3 };
     const ap = a.severity ?? 'info';
     const bp = b.severity ?? 'info';
     return order[ap] - order[bp];
@@ -168,7 +181,7 @@ export function runReversingValveEngine(measurements: ReversingValveMeasurements
 
   let solenoidStatus: 'ok' | 'no_voltage' | 'low_voltage' | undefined;
   if (measurements.solenoidVoltage !== undefined && profile.reversingValve) {
-    const sol = analyzeSolenoid(measurements.solenoidVoltage, profile.reversingValve!.solenoid.voltage);
+    const sol = analyzeSolenoid(measurements.solenoidVoltage, profile.reversingValve.solenoid.voltage);
     solenoidStatus = sol.status;
     // engine no longer captures presentation text (solenoidMessage) — modules should generate human-facing messages
   }

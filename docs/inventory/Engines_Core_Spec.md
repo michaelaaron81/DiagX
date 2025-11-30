@@ -30,7 +30,7 @@ Below is a minimal example showing the recommended `EngineResult<V,F>` contract 
 // src/shared/wshp.types.ts
 export type DiagnosticStatus = 'ok' | 'warning' | 'alert' | 'critical';
 
-export interface Recommendation { id: string; module: string; priority: string; action: string; reason?: string; requiresShutdown?: boolean }
+export interface Recommendation { id: string; domain: 'airside' | 'refrigeration' | 'compressor_recip' | 'compressor_scroll' | 'reversing_valve' | 'hydronic' | 'condenser_approach' | 'combined'; severity: 'info' | 'advisory' | 'alert' | 'critical'; intent: 'diagnostic' | 'safety' | 'routing'; summary: string; rationale?: string; notes?: string[]; requiresShutdown?: boolean }
 
 export interface EngineResult<V extends Record<string, number>, F extends Record<string, any>> {
   status: DiagnosticStatus;
@@ -52,7 +52,7 @@ export function runExampleEngine(measurements: any): EngineResult<{ foo: number 
 export function generateExampleRecommendations(result: EngineResult<{ foo: number }, { fooStatus: DiagnosticStatus }>) {
   const recs: Recommendation[] = [];
   if (result.flags.fooStatus === 'critical') {
-    recs.push({ id: 'example_foo_critical', module: 'example', priority: 'critical', action: 'Take immediate action', reason: 'foo value exceeded safe limit', requiresShutdown: true });
+    recs.push({ id: 'example_foo_critical', domain: 'example' as any, severity: 'critical', intent: 'safety', summary: 'Measured foo exceeds safe limits', rationale: 'foo exceeded absolute safety limit and may cause rapid failure', notes: [], requiresShutdown: true });
   }
   return recs;
 }

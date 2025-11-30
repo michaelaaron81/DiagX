@@ -32,18 +32,11 @@ export interface Recommendation {
   // indicates the equipment should not be run (without providing shutdown steps).
   requiresShutdown?: boolean;
 
-  // Backward-compatible fields used by existing engines/modules
-  // @deprecated: to be removed after migration to diagnostic-only recommendations
-  // action?: string;
-  // estimatedTime?: string;
-  // requiredParts?: string[];
-  priority?: 'critical' | 'high' | 'medium' | 'low' | 'monitor' | 'alert' | 'warning';
-  module?: string;
-  code?: string;
-  title?: string;
-  description?: string;
-  reason?: string;
-  safetyWarning?: string;
+  // Backward-compatible fields used by existing engines/modules have been
+  // removed -- Recommendation is now strictly diagnostic-only (summary,
+  // rationale, notes, requiresShutdown). All presentation-only or repair fields
+  // (priority/module/title/description/action/estimatedTime/requiredParts)
+  // were removed to enforce the new safety contract.
   // Note: removed fields that contained procedural/time/cost guidance to avoid
   // telling technicians how to perform repairs or providing price/time estimates.
   // Do NOT add fields that contain step-by-step instructions, estimated time,
@@ -52,8 +45,8 @@ export interface Recommendation {
 }
 
 export interface EngineResult<
-  V extends Record<string, any> = Record<string, number>,
-  F extends Record<string, any> = Record<string, boolean>
+  V extends object = Record<string, unknown>,
+  F extends object = Record<string, unknown>
 > {
   status: DiagnosticStatus;
   values: V;
@@ -79,7 +72,7 @@ export interface MeasurementHelp {
   safetyWarnings?: string[];
 }
 
-export interface ModuleHelp<T = any> {
+export interface ModuleHelp<T = Record<string, unknown>> {
   measurementHelp: Partial<Record<keyof T, MeasurementHelp>> | Record<string, MeasurementHelp>;
   diagnosticHelp?: {
     whatWeCheck?: string;
@@ -92,7 +85,7 @@ export interface ModuleHelp<T = any> {
 
 // Loosely-typed explanation payload; individual modules shape this for their UIs
 export interface DiagnosisExplanation {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ActionSteps {
@@ -118,7 +111,7 @@ export interface DiagnosticContext {
   debug?: boolean;
 }
 
-export interface DiagnosticModule<TProfile = any, TMeasurements = any, TDiagnosis = any> {
+export interface DiagnosticModule<TProfile = Record<string, unknown>, TMeasurements = Record<string, unknown>, TDiagnosis = Record<string, unknown>> {
   metadata: ModuleMetadata;
   help: ModuleHelp<TMeasurements>;
   validate(measurements: TMeasurements, profile: TProfile): ValidationResult;
@@ -126,7 +119,7 @@ export interface DiagnosticModule<TProfile = any, TMeasurements = any, TDiagnosi
   getRecommendations?(diagnosis: TDiagnosis, profile: TProfile): Recommendation[];
   summarizeForReport?(diagnosis: TDiagnosis, profile: TProfile): string;
   getMeasurementHelp?(field: keyof TMeasurements): MeasurementHelp | undefined;
-  explainDiagnosis?(diagnosis: TDiagnosis): DiagnosisExplanation | any;
+  explainDiagnosis?(diagnosis: TDiagnosis): DiagnosisExplanation | unknown;
 }
 
 // Helpful formatters used across modules

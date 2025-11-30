@@ -69,7 +69,8 @@ export class HydronicDiagnosticModule {
         return lines.join('\n');
     }
     getMeasurementHelp(field) {
-        return this.help.measurementHelp[field];
+        const mh = this.help.measurementHelp;
+        return mh[field];
     }
     explainDiagnosis(diagnosis) {
         const summary = (diagnosis.recommendations || []).find(r => r.severity === 'critical')?.summary || (diagnosis.recommendations && diagnosis.recommendations.length ? (diagnosis.recommendations[0].summary || diagnosis.recommendations[0].rationale) : 'No recommendations');

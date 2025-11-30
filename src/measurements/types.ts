@@ -19,12 +19,12 @@ export interface RefrigerationMeasurements {
 }
 
 export interface CombinedMeasurements {
-  airside?: any;
+  airside?: Record<string, unknown> | undefined;
   waterSide?: WaterSideMeasurements;
   refrigeration?: RefrigerationMeasurements;
-  recipCompressor?: any;
-  scrollCompressor?: any;
-  reversingValve?: any;
+  recipCompressor?: Record<string, unknown> | undefined;
+  scrollCompressor?: Record<string, unknown> | undefined;
+  reversingValve?: Record<string, unknown> | undefined;
 }
 
 export default CombinedMeasurements;

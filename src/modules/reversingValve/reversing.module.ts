@@ -15,7 +15,7 @@ export const reversingValveMetadata: ModuleMetadata = {
 export const reversingValveHelp: ModuleHelp<ReversingValveMeasurements> = {
   measurementHelp: {
     requestedMode: { field: 'requestedMode', label: 'Requested Mode', description: 'Mode requested at thermostat', units: 'mode' },
-    reversingValvePortTemps: { field: 'reversingValvePortTemps', label: 'Port Temps', description: 'Temperatures of all 4 valve ports', units: '°F' } as any,
+    reversingValvePortTemps: { field: 'reversingValvePortTemps', label: 'Port Temps', description: 'Temperatures of all 4 valve ports', units: '°F' },
     solenoidVoltage: { field: 'solenoidVoltage', label: 'Solenoid Voltage', description: 'Voltage at reversing valve solenoid coil', units: 'VAC' },
     suctionPressure: { field: 'suctionPressure', label: 'Suction Pressure', description: 'Low-side pressure', units: 'PSIG' },
     dischargePressure: { field: 'dischargePressure', label: 'Discharge Pressure', description: 'High-side pressure', units: 'PSIG' },
@@ -68,8 +68,8 @@ export class ReversingValveDiagnosticModule implements DiagnosticModule<WaterCoo
     return lines.join('\n');
   }
 
-  getMeasurementHelp(field: keyof ReversingValveMeasurements): MeasurementHelp {
-    return (this.help.measurementHelp as any)[field];
+  getMeasurementHelp(field: keyof ReversingValveMeasurements): MeasurementHelp | undefined {
+    return this.help.measurementHelp[field] as MeasurementHelp | undefined;
   }
 
   explainDiagnosis(diagnosis: ReversingValveDiagnosis): DiagnosisExplanation {
@@ -83,7 +83,7 @@ export class ReversingValveDiagnosticModule implements DiagnosticModule<WaterCoo
     return {
       summary,
       steps: [...immediate, ...diagnostic, ...repair],
-    } as any;
+    } as DiagnosisExplanation;
   }
 }
 

@@ -31,12 +31,13 @@ export type DiagnosticStatus = 'ok' | 'warning' | 'alert' | 'critical';
 
 export interface Recommendation {
   id: string;
-  category: 'repair' | 'maintenance' | 'further_testing' | 'safety';
-  severity: DiagnosticStatus;
-  action: string;
-  rationaleFlag: string;
-  requiresShutdown: boolean;
-  notes?: string;
+  domain: 'airside' | 'refrigeration' | 'compressor_recip' | 'compressor_scroll' | 'reversing_valve' | 'hydronic' | 'condenser_approach' | 'combined';
+  severity: 'info' | 'advisory' | 'alert' | 'critical';
+  intent: 'diagnostic' | 'safety' | 'routing';
+  summary: string;
+  rationale?: string;
+  notes?: string[];
+  requiresShutdown?: boolean;
 }
 
 export interface EngineResult<

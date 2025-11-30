@@ -15,13 +15,13 @@ Proposed additional recommendations (engine-agnostic format)
 ```json
 {
   "id": "airside_measure_airflow_and_esp",
-  "module": "airside",
-  "priority": "high",
-  "severity": "high",
-  "action": "Collect airflow and ESP measurements to support diagnostic evaluation; record measurement context and conditions.",
-  "rationaleFlag": "airflow_diagnostic",
+  "domain": "airside",
+  "severity": "alert",
+  "intent": "diagnostic",
+  "summary": "Collect airflow and ESP measurements to support diagnostic evaluation; record measurement context and conditions.",
+  "rationale": "Confirm CFM/ton and ESP to narrow down root cause (filter / blower / duct).",
   "requiresShutdown": false,
-  "notes": "Confirm CFM/ton and ESP to narrow down root cause (filter / blower / duct)."
+  "notes": ["Confirm CFM/ton and ESP to narrow down root cause (filter / blower / duct)."]
 }
 ```
 
@@ -30,13 +30,13 @@ Proposed additional recommendations (engine-agnostic format)
 ```json
 {
   "id": "airside_replace_clean_filter",
-  "module": "airside",
-  "priority": "high",
-  "severity": "high",
-  "action": "Filter condition may be a contributing factor; filter cleaning or replacement could be appropriate depending on measured pressure drop and observed condition.",
-  "rationaleFlag": "filter_dirty",
+  "domain": "airside",
+  "severity": "alert",
+  "intent": "diagnostic",
+  "summary": "Filter condition may be a contributing factor to observed performance deviations.",
+  "rationale": "Dirty filters are a common cause of high ΔT and low airflow; measure filter pressure drop to determine impact on system performance.",
   "requiresShutdown": false,
-  "notes": "Dirty filters are a common cause of high ΔT and low airflow; replacing can return the system to nominal before deeper troubleshooting."
+  "notes": ["Dirty filters are a common cause of high ΔT and low airflow."]
 }
 ```
 
@@ -45,13 +45,13 @@ Proposed additional recommendations (engine-agnostic format)
 ```json
 {
   "id": "airside_inspect_blower_fan",
-  "module": "airside",
-  "priority": "high",
-  "severity": "high",
-  "action": "Blower subsystem or drive performance may be contributing to low airflow; specialist evaluation and repair/replacement may be required depending on findings.",
-  "rationaleFlag": "blower_issue",
+  "domain": "airside",
+  "severity": "critical",
+  "intent": "routing",
+  "summary": "Blower subsystem or drive performance may be contributing to low airflow and requires specialist evaluation.",
+  "rationale": "Measurements indicate a subsystem-level issue that is outside the diagnostic layer and should be routed to a repair/planning workflow.",
   "requiresShutdown": true,
-  "notes": "Blower/drive failures often reduce airflow even when filters look OK. Electrical safety checks should be performed by a qualified technician."
+  "notes": ["Measurements indicate subsystem-level issues that may need specialist service."]
 }
 ```
 
@@ -60,11 +60,11 @@ Proposed additional recommendations (engine-agnostic format)
 ```json
 {
   "id": "airside_inspect_ducts_registers",
-  "module": "airside",
-  "priority": "high",
+  "domain": "airside",
   "severity": "alert",
-  "action": "Ductwork, registers, and balancing components may be contributing to airflow issues; investigation and remediation of obstructions or misconfiguration are recommended.",
-  "rationaleFlag": "ductwork_blockage",
+  "intent": "diagnostic",
+  "summary": "Ductwork, registers, or balancing components may be contributing to airflow issues; inspect for obstructions and configuration issues.",
+  "rationale": "Patterns in airflow and pressure indicate outlet-side restrictions may be present.",
   "requiresShutdown": false
 }
 ```
@@ -74,13 +74,12 @@ Proposed additional recommendations (engine-agnostic format)
 ```json
 {
   "id": "airside_defrost_and_assess",
-  "module": "airside",
-  "priority": "critical",
+  "domain": "airside",
   "severity": "critical",
-  "action": "Recommend system shutdown where operating conditions pose immediate safety or equipment risk and coordinate a qualified technician evaluation before restart.",
-  "rationaleFlag": "frozen_coil",
-  "requiresShutdown": true,
-  "safetyWarning": "Do not operate compressor against a frozen coil — risk of floodback and compressor damage."
+  "intent": "safety",
+  "summary": "Measured coil and airflow conditions indicate a frozen coil which poses immediate equipment risk.",
+  "rationale": "Operating the compressor against a frozen coil can cause liquid migration and compressor damage; this condition is flagged as safety-critical.",
+  "requiresShutdown": true
 }
 ```
 
@@ -89,13 +88,12 @@ Proposed additional recommendations (engine-agnostic format)
 ```json
 {
   "id": "refrigeration_stop_for_low_superheat",
-  "module": "refrigeration",
-  "priority": "critical",
+  "domain": "refrigeration",
   "severity": "critical",
-  "action": "Low superheat with indicators of possible liquid entry represents a critical condition — recommend shutting down affected compressors and coordinating qualified technician assessment before restart.",
-  "rationaleFlag": "superheat_critical",
-  "requiresShutdown": true,
-  "safetyWarning": "Low superheat indicates potential liquid refrigerant entering compressor; continued operation risks compressor failure."
+  "intent": "safety",
+  "summary": "Measured superheat and related patterns indicate an elevated risk of liquid entry into the compressor.",
+  "rationale": "Low superheat can indicate liquid refrigerant presence in the compressor inlet which risks severe equipment damage; this is flagged as safety-critical.",
+  "requiresShutdown": true
 }
 ```
 
@@ -104,11 +102,11 @@ Proposed additional recommendations (engine-agnostic format)
 ```json
 {
   "id": "refrigeration_leak_check_and_repair",
-  "module": "refrigeration",
-  "priority": "high",
-  "severity": "high",
-  "action": "When superheat/subcooling patterns indicate charge anomalies, leak detection and remediation should be performed and validated prior to any refrigerant charging actions.",
-  "rationaleFlag": "charge_issue",
+  "domain": "refrigeration",
+  "severity": "alert",
+  "intent": "routing",
+  "summary": "Patterns in superheat and subcooling suggest a potential charge anomaly that requires a leak investigation and repair workflow.",
+  "rationale": "Anomalies in refrigerant charge typically require planning-level repair steps and validation prior to recharging.",
   "requiresShutdown": false
 }
 ```
@@ -120,11 +118,11 @@ Observation: The gap scan found there were no recommendations returned in some s
 Suggested examples (safety-critical):
 
 ```json
-{ "id": "compressor_recip_internal_bypass_suspected", "module": "compressor_recip", "priority": "critical", "severity":"critical", "action": "Reversing valve malfunction is a plausible cause for observed patterns; evaluation of valve and compressor operation is recommended. Avoid extended operation under suspected failure conditions.", "requiresShutdown": true }
+{ "id": "compressor_recip_internal_bypass_suspected", "domain": "compressor_recip", "severity":"critical", "intent":"routing", "summary": "Observed patterns are consistent with reversing-valve-related internal bypass; route to repair/planning workflow for further evaluation.", "requiresShutdown": true }
 ```
 
 ```json
-{ "id": "compressor_recip_current_far_above_rla", "module": "compressor_recip", "priority": "critical", "severity":"critical", "action": "High current draw usually indicates a hazardous operating condition; recommend immediate shutdown and qualified electrical/mechanical assessment prior to further operation.", "requiresShutdown": true }
+{ "id": "compressor_recip_current_far_above_rla", "domain": "compressor_recip", "severity":"critical", "intent":"safety", "summary": "Measured current is far above RLA and indicates a hazardous electrical/mechanical operating state.", "requiresShutdown": true }
 ```
 
 9) Tests to add

@@ -1,5 +1,4 @@
-import { DiagnosticModule, ValidationResult, Recommendation, MeasurementHelp, ModuleMetadata, ModuleHelp } from '../../shared/wshp.types';
-import { WaterCooledUnitProfile } from '../../wshp/wshp.profile';
+import { DiagnosticModule, ValidationResult, Recommendation, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp } from '../../shared/wshp.types';
 import { ScrollCompressorMeasurements, ScrollCompressorResult, ScrollCompressorConfig } from './scroll.types';
 export declare const scrollCompressorMetadata: ModuleMetadata;
 export declare const scrollCompressorHelp: ModuleHelp<ScrollCompressorMeasurements>;
@@ -9,8 +8,8 @@ export declare class ScrollCompressorDiagnosticModule implements DiagnosticModul
     validate(measurements: ScrollCompressorMeasurements): ValidationResult;
     diagnose(measurements: ScrollCompressorMeasurements, profile: ScrollCompressorConfig): ScrollCompressorResult;
     getRecommendations(diagnosis: ScrollCompressorResult): Recommendation[];
-    summarizeForReport(diagnosis: ScrollCompressorResult, profile: WaterCooledUnitProfile): string;
-    getMeasurementHelp(field: keyof ScrollCompressorMeasurements): MeasurementHelp;
-    explainDiagnosis(diagnosis: ScrollCompressorResult): any;
+    summarizeForReport(diagnosis: ScrollCompressorResult, profile: ScrollCompressorConfig): string;
+    getMeasurementHelp(field: keyof ScrollCompressorMeasurements): MeasurementHelp | undefined;
+    explainDiagnosis(diagnosis: ScrollCompressorResult): DiagnosisExplanation;
 }
 export declare const scrollCompressorModule: ScrollCompressorDiagnosticModule;

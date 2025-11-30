@@ -81,7 +81,7 @@ export function runScrollCompressorEngine(measurements: ScrollCompressorMeasurem
   }
 
   // read only shallow, well-known profile fields (avoid deep, appliance-specific config)
-  const rla = (profile && (profile.compressor as any)?.rla) ? (profile.compressor as any).rla : undefined;
+  const rla = profile?.compressor?.rla;
   const currentAnalysis = analyzeCurrent(measurements.runningCurrent, rla);
 
   // Consolidate overall status
@@ -94,8 +94,8 @@ export function runScrollCompressorEngine(measurements: ScrollCompressorMeasurem
 
   // Add a small protective disclaimer about manufacturer-specific compressors (medical custom refrigerants)
   // Record a small protective disclaimer for custom refrigerants — prefer the canonical field `refrigerantType`.
-  const refrigerantFromProfile = (profile as any)?.refrigeration?.refrigerantType ?? (profile as any)?.refrigeration?.refrigerant;
-  if ((profile as any)?.compressor?.type === 'scroll' && (profile as any).model && String(refrigerantFromProfile || '').toUpperCase() === 'OTHER') {
+  const refrigerantFromProfile = profile?.refrigeration?.refrigerantType;
+  if (profile?.compressor?.type === 'scroll' && profile?.model && String(refrigerantFromProfile || '').toUpperCase() === 'OTHER') {
     disclaimers.push('Using "OTHER" refrigerant — verify compressor performance and curves with the equipment manufacturer and IOM manual. Custom refrigerants may change performance and limits.');
   }
 

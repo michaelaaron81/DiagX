@@ -8,6 +8,7 @@ export function generateHydronicSourceRecommendations(
   result: HydronicSourceEngineResult,
   _context: HydronicSourceContext,
 ): Recommendation[] {
+  void _context;
   const recs: Recommendation[] = [];
   const { flags } = result;
 

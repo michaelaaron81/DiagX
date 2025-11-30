@@ -16,7 +16,7 @@ Diagx-Omen/
 ├─ .vscode/
 ├─ dist/
 ├─ docs/
-├─ Engines to be extracted/
+├─ (deleted) Engines to be extracted/
 ├─ node_modules/
 ├─ scripts/
 ├─ src/
@@ -83,8 +83,8 @@ docs/
 │  └─ Engines_Core_Spec.md
 ├─ NO_OEM_IOM.md
 ├─ CHANGELOG.md
-├─ DiagX_engineer_seed_V1.md
-├─ DiagX_master_seed_V3.md
+├─ DiagX_engineer_seed_V2.md
+├─ DiagX_master_seed_V4.md
 ├─ DiagX_Safety_Manual_Outline.md
 ├─ Plan_to_fix_existing_integrity_issues.md
 ├─ Test_Run_Vitest_2025-11-29.md
@@ -94,11 +94,11 @@ docs/
  - `docs/process/NO_OEM_IOM.md` – policy on excluding OEM/IOM tables from the repo  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/NO_OEM_IOM.md
 
- - `docs/process/DiagX_engineer_seed_V1.md` – engineer-facing seed defining how the DiagX engine should behave and be used during development  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_engineer_seed_V1.md
+- `docs/process/DiagX_engineer_seed_V2.md` – engineer-facing seed (V2) defining how the DiagX engine should behave and be used during development  
+  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_engineer_seed_V2.md
 
- - `docs/process/DiagX_master_seed_V3.md` – master seed V3; canonical product, domain, and behavior spec for DiagX  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_master_seed_V3.md
+- `docs/process/DiagX_master_seed_V4.md` – master seed V4; canonical product, domain, and behavior spec for DiagX  
+  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_master_seed_V4.md
 
  - `docs/process/DiagX_Safety_Manual_Outline.md` – section-only safety manual outline  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_Safety_Manual_Outline.md

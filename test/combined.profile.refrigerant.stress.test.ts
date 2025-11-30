@@ -1,10 +1,10 @@
 import { test, expect } from 'vitest';
 import { runWshpDiagx } from '../src/wshp/wshp.diagx';
-import { WaterCooledUnitProfile } from '../src/wshp/wshp.profile';
+import type { WaterCooledUnitProfile } from '../src/wshp/wshp.profile';
 import fs from 'fs';
 
 // Stress test scenarios for combined profile audit with refrigerant problems
-const scenarios: { name: string; profile: any }[] = [
+const scenarios: { name: string; profile: Record<string, unknown> }[] = [
   {
     name: 'Refrigerant Undercharge - High Superheat, Low Subcooling',
     profile: {
@@ -104,7 +104,7 @@ const scenarios: { name: string; profile: any }[] = [
 ];
 
 // Measurements for each scenario - bad refrigerant values
-const measurementsMap: Record<string, any> = {
+const measurementsMap: Record<string, unknown> = {
   'refrig-undercharge': {
     airside: { enteringDryBulb: 80, enteringWetBulb: 67, leavingDryBulb: 55, leavingWetBulb: 54, cfm: 2000 },
     refrigeration: { suctionPressure: 100, dischargePressure: 300, suctionTemp: 60, dischargeTemp: 150, liquidTemp: 130 },
@@ -179,23 +179,24 @@ test('combined profile refrigerant stress test - generate detailed log', () => {
     log += `### Input Profile\n\`\`\`json\n${JSON.stringify(scenario.profile, null, 2)}\n\`\`\`\n\n`;
     log += `### Input Measurements\n\`\`\`json\n${JSON.stringify(measurementsMap[scenario.profile.id], null, 2)}\n\`\`\`\n\n`;
 
-    const measurements = measurementsMap[scenario.profile.id];
-    const result = runWshpDiagx({ profile: scenario.profile, measurements });
+    const measurements = measurementsMap[scenario.profile.id] as unknown as Record<string, unknown>;
+    const result = runWshpDiagx({ profile: scenario.profile as unknown as WaterCooledUnitProfile, measurements });
 
     log += `### Output Audit Result\n\`\`\`json\n${JSON.stringify(result, null, 2)}\n\`\`\`\n\n`;
 
     // Collect all recommendations from domain results
-    const allRecs: any[] = [];
+    const allRecs: unknown[] = [];
     result.domainResults.forEach(dr => {
-      if ((dr.details as any)?.recommendations) {
-        allRecs.push(...(dr.details as any).recommendations);
+      if (((dr.details as unknown) as Record<string, unknown>)?.recommendations) {
+        allRecs.push(...(((dr.details as unknown) as Record<string, unknown>).recommendations as unknown as Array<unknown>));
       }
     });
 
     if (allRecs.length > 0) {
       log += `### Recommendations Generated (${allRecs.length})\n`;
-      allRecs.forEach((rec, i) => {
-        log += `- **${rec.title}**: ${rec.description}\n`;
+      allRecs.forEach(rec => {
+        const r = rec as { title?: string; description?: string };
+        log += `- **${r.title}**: ${r.description}\n`;
       });
       log += '\n';
     } else {
@@ -204,9 +205,9 @@ test('combined profile refrigerant stress test - generate detailed log', () => {
 
     // Assertions for refrigeration recommendations
     const refrigerationResult = result.domainResults.find(dr => dr.domain === 'refrigeration');
-    if (refrigerationResult && (refrigerationResult.details as any)?.recommendations) {
-      const refrigRecs = (refrigerationResult.details as any).recommendations;
-      const recIds = refrigRecs.map((r: any) => r.id);
+    if (refrigerationResult && ((refrigerationResult.details as unknown) as Record<string, unknown>)?.recommendations) {
+      const refrigRecs = (((refrigerationResult.details as unknown) as Record<string, unknown>).recommendations as unknown as Array<{ id?: string }>);
+      const recIds = refrigRecs.map(r => r.id);
 
       // Check for expected recs based on scenario
       if (scenario.name.includes('Undercharge')) {

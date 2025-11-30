@@ -18,7 +18,7 @@ Diagx-Omen/
 ├─ .vscode/
 ├─ dist/
 ├─ docs/
-├─ Engines to be extracted/
+├─ (deleted) Engines to be extracted/
 ├─ node_modules/
 ├─ scripts/
 ├─ src/
