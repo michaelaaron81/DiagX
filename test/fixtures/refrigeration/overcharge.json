@@ -1,0 +1,15 @@
+{
+  "profile": {
+    "id": "demo-overcharge",
+    "nominalTons": 3,
+    "airside": { "designCFM": { "cooling": 1000 }, "externalStaticPressure": { "design": 0.25, "max": 0.5 } },
+    "waterSide": { "flowRate": 30, "loopType": "closed_tower" },
+    "refrigeration": { "refrigerantType": "R-410A", "metering": { "cooling": { "type": "txv" } } },
+    "compressor": { "type": "scroll", "stages": 1, "hasVFD": false, "rla": 10, "lra": 40 },
+    "electrical": { "nameplateVoltage": 460, "phase": 3 },
+    "supportsHeating": false
+  },
+  "measurements": {
+    "refrigeration": { "mode": "cooling", "suctionPressure": 110, "dischargePressure": 420, "suctionTemp": 30, "liquidTemp": 60, "enteringWaterTemp": 80, "leavingWaterTemp": 88 }
+  }
+}

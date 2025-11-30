@@ -1,0 +1,1 @@
+WSHP core (profiles, config builders, and orchestrator) will go here in src/wshp.

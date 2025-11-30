@@ -1,0 +1,11 @@
+{
+  "profile": {
+    "id": "comp-recip-lowcompression",
+    "nominalTons": 2,
+    "compressor": { "type": "reciprocating", "totalCylinders": 2, "rla": 18, "lra": 70, "model": "RC-120" },
+    "refrigeration": { "refrigerantType": "OTHER" }
+  },
+  "measurements": {
+    "compressor": { "compressorId": "C1", "suctionPressure": 150, "dischargePressure": 350, "suctionTemp": 70, "compressorCurrent": 20, "isRunning": true, "totalCylinders": 2 }
+  }
+}

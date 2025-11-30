@@ -1,0 +1,15 @@
+{
+  "profile": {
+    "id": "demo-unit",
+    "nominalTons": 3,
+    "airside": { "designCFM": { "cooling": 1000 }, "externalStaticPressure": { "design": 0.25, "max": 0.5 } },
+    "waterSide": { "flowRate": 30, "loopType": "closed_tower" },
+    "refrigeration": { "refrigerantType": "R410A", "metering": { "cooling": { "type": "txv" } } },
+    "compressor": { "type": "scroll", "stages": 1, "hasVFD": false, "rla": 10, "lra": 40 },
+    "electrical": { "nameplateVoltage": 460, "phase": 3 },
+    "supportsHeating": false
+  },
+  "measurements": {
+    "refrigeration": { "mode": "cooling", "suctionPressure": 120, "dischargePressure": 300, "suctionTemp": 95, "liquidTemp": 120, "enteringWaterTemp": 80, "leavingWaterTemp": 88 }
+  }
+}

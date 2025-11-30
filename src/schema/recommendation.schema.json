@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DiagX Recommendation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "domain", "severity", "intent", "summary"],
+  "properties": {
+    "id": { "type": "string" },
+    "domain": {
+      "type": "string",
+      "enum": [
+        "airside",
+        "refrigeration",
+        "compressor_recip",
+        "compressor_scroll",
+        "reversing_valve",
+        "hydronic",
+        "condenser_approach",
+        "combined"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["info", "advisory", "alert", "critical"]
+    },
+    "intent": {
+      "type": "string",
+      "enum": ["diagnostic", "safety", "routing"]
+    },
+    "summary": { "type": "string" },
+    "rationale": { "type": "string" },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "requiresShutdown": { "type": "boolean" }
+  }
+}

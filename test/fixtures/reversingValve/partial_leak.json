@@ -1,0 +1,17 @@
+{
+  "profile": {
+    "id": "rev-leak",
+    "nominalTons": 2,
+    "supportsHeating": true,
+    "reversingValve": { "type": "four_way", "solenoid": { "voltage": 24 } }
+  },
+  "measurements": {
+    "reversingValve": {
+      "requestedMode": "cooling",
+      "reversingValvePortTemps": { "dischargeInlet": 200, "suctionReturn": 60, "indoorCoilLine": 55, "outdoorCoilLine": 190 },
+      "suctionPressure": 100,
+      "dischargePressure": 280,
+      "solenoidVoltage": 24
+    }
+  }
+}

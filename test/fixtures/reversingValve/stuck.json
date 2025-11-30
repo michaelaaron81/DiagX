@@ -1,0 +1,17 @@
+{
+  "profile": {
+    "id": "rev-stuck",
+    "nominalTons": 3,
+    "supportsHeating": true,
+    "reversingValve": { "type": "four_way", "solenoid": { "voltage": 24 } }
+  },
+  "measurements": {
+    "reversingValve": {
+      "requestedMode": "cooling",
+      "reversingValvePortTemps": { "dischargeInlet": 160, "suctionReturn": 150, "indoorCoilLine": 155, "outdoorCoilLine": 152 },
+      "suctionPressure": 80,
+      "dischargePressure": 85,
+      "solenoidVoltage": 24
+    }
+  }
+}

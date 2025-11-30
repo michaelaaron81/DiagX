@@ -1,0 +1,15 @@
+{
+  "profile": {
+    "id": "airside-lowflow",
+    "nominalTons": 3,
+    "airside": { "designCFM": { "cooling": 1000 }, "externalStaticPressure": { "design": 0.25, "max": 0.5 } },
+    "waterSide": { "flowRate": 30, "loopType": "closed_tower" },
+    "refrigeration": { "refrigerantType": "R-410A", "metering": { "cooling": { "type": "txv" } } },
+    "compressor": { "type": "scroll", "stages": 1, "hasVFD": false, "rla": 10, "lra": 40 },
+    "electrical": { "nameplateVoltage": 460, "phase": 3 },
+    "supportsHeating": false
+  },
+  "measurements": {
+    "airside": { "mode": "cooling", "returnAirTemp": 75, "supplyAirTemp": 55, "measuredCFM": 600, "externalStatic": 0.4 }
+  }
+}

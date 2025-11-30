@@ -1,0 +1,17 @@
+{
+  "profile": {
+    "id": "rev-reversed",
+    "nominalTons": 4,
+    "supportsHeating": true,
+    "reversingValve": { "type": "four_way", "solenoid": { "voltage": 24 } }
+  },
+  "measurements": {
+    "reversingValve": {
+      "requestedMode": "cooling",
+      "reversingValvePortTemps": { "dischargeInlet": 200, "suctionReturn": 60, "indoorCoilLine": 190, "outdoorCoilLine": 65 },
+      "suctionPressure": 80,
+      "dischargePressure": 370,
+      "solenoidVoltage": 24
+    }
+  }
+}

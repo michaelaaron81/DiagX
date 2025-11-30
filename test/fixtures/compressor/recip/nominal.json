@@ -1,0 +1,14 @@
+{
+  "profile": {
+    "id": "comp-recip-nominal",
+    "nominalTons": 5,
+    "airside": { "designCFM": { "cooling": 2000 } },
+    "waterSide": { "flowRate": 50, "loopType": "open_tower" },
+    "refrigeration": { "refrigerantType": "R-22", "metering": { "cooling": { "type": "piston" } } },
+    "compressor": { "type": "reciprocating", "totalCylinders": 4, "rla": 50, "lra": 200, "model": "RC-400" },
+    "electrical": { "nameplateVoltage": 460, "phase": 3 }
+  },
+  "measurements": {
+    "compressor": { "compressorId": "A1", "suctionPressure": 80, "dischargePressure": 400, "suctionTemp": 60, "dischargeTemp": 180, "compressorCurrent": 35, "isRunning": true, "totalCylinders": 4 }
+  }
+}

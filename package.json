@@ -1,0 +1,35 @@
+{
+  "name": "diagx-omen",
+  "version": "0.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "demo": "node -r ts-node/register src/cli/demo.ts",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "pt": "ts-node src/cli/pt.ts",
+    "pt:check": "node ./scripts/check-oem.js",
+    "check:oem": "node ./scripts/check-oem.js",
+    "lint": "eslint . --ext .ts",
+    "consolidate-audit": "node ./scripts/consolidate-audit.js",
+    "format": "prettier --write .",
+    "start": "node -r ts-node/register src/cli/demo.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0",
+    "vitest": "^4.0.14",
+    "@vitest/coverage-v8": "^4.0.14",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "prettier": "^2.0.0",
+    "eslint-config-prettier": "^8.0.0",
+    "eslint-plugin-import": "^2.0.0",
+    "ajv": "^8.12.0"
+  },
+  "dependencies": {
+    "commander": "^10.0.0"
+  }
+}

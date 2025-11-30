@@ -1,0 +1,11 @@
+{
+  "profile": {
+    "id": "comp-recip-highcurrent",
+    "nominalTons": 3,
+    "compressor": { "type": "reciprocating", "totalCylinders": 4, "rla": 20, "lra": 75, "model": "RC-200" },
+    "refrigeration": { "refrigerantType": "R-410A" }
+  },
+  "measurements": {
+    "compressor": { "compressorId": "B1", "suctionPressure": 60, "dischargePressure": 360, "suctionTemp": 55, "compressorCurrent": 32, "isRunning": true, "totalCylinders": 4 }
+  }
+}
