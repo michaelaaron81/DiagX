@@ -103,17 +103,17 @@ Notes and highlights:
 - `docs/process/NO_OEM_IOM.md`  policy on excluding OEM/IOM tables from the repo  
   https://github.com/michaelaaron81/DiagX/blob/main/docs/process/NO_OEM_IOM.md
 
-`docs/process/DiagX_engineer_seed_V2.md`  engineer-facing seed and development guidance  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_engineer_seed_V2.md
+ `docs/process/DiagX_engineer_seed_V2.md`  engineer-facing seed and development guidance
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/DiagX_engineer_seed_V2.md
 
-`docs/process/DiagX_master_seed_V4.md`  master seed V4; canonical product/domain behavior spec  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_master_seed_V4.md
+`docs/process/DiagX_master_seed_V4.md`  master seed V4; canonical product/domain behavior spec
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/DiagX_master_seed_V4.md
 
 - `docs/process/Local_Editor_Guardrails.md`  local editor / VS Code guardrails for DiagX  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/Local_Editor_Guardrails.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/Local_Editor_Guardrails.md
 
 - `docs/CHANGELOG.md`  human-readable changelog  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/CHANGELOG.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/CHANGELOG.md
 
 - `docs/audits/`  audit logs and test run reports (Vitest logs, integrity checks)
 
@@ -156,7 +156,7 @@ scripts/
 ```
 
 - `scripts/recommendation-gap-scan.ts`  searches scenarios for recommendation gaps and prints results  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/scripts/recommendation-gap-scan.ts
+  https://github.com/michaelaaron81/DiagX/blob/main/scripts/recommendation-gap-scan.ts
 
 ---
 
@@ -177,7 +177,7 @@ scripts/
 ```
 
 - `src/shared/wshp.types.ts`  shared contracts including `EngineResult`, `Recommendation`, and `DiagnosticStatus`  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/src/shared/wshp.types.ts
+  https://github.com/michaelaaron81/DiagX/blob/main/src/shared/wshp.types.ts
 
 ---
 

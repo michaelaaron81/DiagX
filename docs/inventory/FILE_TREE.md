@@ -1,7 +1,7 @@
 ```markdown
-# Diagx-Omen – Repository File Tree (internal copy)
+# DiagX – Repository File Tree (internal copy)
 
-Repository: https://github.com/michaelaaron81/Diagx-Omen  
+Repository: https://github.com/michaelaaron81/DiagX  
 Default branch: `main`
 
 This document shows the project structure with short descriptions and live GitHub links. It is focused on all files that matter for diagnostics, engines, modules, orchestration, and tests.
@@ -11,7 +11,7 @@ This document shows the project structure with short descriptions and live GitHu
 ## High-Level Structure
 
 ```text
-Diagx-Omen/
+DiagX/
 ├─ .eslintrc.cjs
 ├─ .git/
 ├─ .prettierrc

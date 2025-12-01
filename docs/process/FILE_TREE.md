@@ -101,7 +101,7 @@ docs/
   https://github.com/michaelaaron81/DiagX/blob/main/docs/process/DiagX_master_seed_V4.md
 
  - `docs/process/DiagX_Safety_Manual_Outline.md` – section-only safety manual outline  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_Safety_Manual_Outline.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/DiagX_Safety_Manual_Outline.md
 
  - `docs/process/Local_Editor_Guardrails.md` – local editor / VS Code guardrails for DiagX  
   https://github.com/michaelaaron81/DiagX/blob/main/docs/process/Local_Editor_Guardrails.md
@@ -122,13 +122,13 @@ docs/
   https://github.com/michaelaaron81/DiagX/blob/main/docs/inventory/Engines_Core_Spec.md
 
  - `docs/plans/Plan_to_fix_existing_integrity_issues.md` – follow-up plan and TODOs discovered during integrity sweep  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/plans/Plan_to_fix_existing_integrity_issues.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/plans/Plan_to_fix_existing_integrity_issues.md
 
 - `docs/Integrity_Tests.md` – integrity test log (TypeScript build, test runs, recommendations, fixes applied)  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/Integrity_Tests.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/Integrity_Tests.md
 
 - `docs/Testing limits.md` – minimal note marking testing limits for this environment  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/Testing%20limits.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/Testing%20limits.md
 
 ---
 
