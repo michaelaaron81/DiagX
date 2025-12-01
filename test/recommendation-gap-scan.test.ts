@@ -4,6 +4,8 @@ import { runReciprocatingCompressorEngine } from '../src/modules/compressor/reci
 import { runScrollCompressorEngine } from '../src/modules/compressor/scroll.engine';
 import { runReversingValveEngine } from '../src/modules/reversingValve/reversing.engine';
 import fs from 'fs';
+import { validateRecommendation } from '../src/shared/recommendation.schema';
+import { assertRecommendationTextSafe } from './helpers/recommendationGuards';
 import { runHydronicEngine } from '../src/modules/hydronic/hydronic.engine';
 import { runCondenserApproachEngine } from '../src/modules/condenserApproach/condenserApproach.engine';
 import { test, expect } from 'vitest';
@@ -11,17 +13,38 @@ import { test, expect } from 'vitest';
 // This test runs multiple fabricated failure scenarios across engines and
 // generates a report listing gaps where flags did not generate a relevant recommendation.
 
-function hasRelevantRecommendation(engineModule: string, result: Record<string, unknown>, keywords: string[]) {
-  if (!Array.isArray((result.recommendations as unknown) as unknown[])) return false;
-  return ((result.recommendations as unknown) as unknown[]).some((r: Record<string, unknown>) => {
-    if (r.module && r.module !== engineModule) return false;
-    const text = ((r.title||'') + ' ' + (r.description||'') + ' ' + (r.notes||'')).toLowerCase();
+function hasRelevantRecommendation(engineModule: string, result: import('../src/shared/wshp.types').EngineResult, keywords: string[]) {
+  if (!Array.isArray(result.recommendations)) return false;
+  return result.recommendations.some((r: import('../src/shared/wshp.types').Recommendation) => {
+    // Ensure schema + wording guards before using textual checks
+    try {
+      // r is runtime object; validateRecommendation is strict so validate it directly
+      if (!validateRecommendation(r)) return false;
+      assertRecommendationTextSafe(r);
+    } catch (err) {
+      // If either schema/guard fails, it's not relevant for the search
+      return false;
+    }
+
+    if ((r as unknown as Record<string, unknown>).module && (r as unknown as Record<string, unknown>).module !== engineModule) return false;
+    // Use canonical fields: summary / rationale / notes
+    const textParts = [ r.summary || '', r.rationale || '', Array.isArray(r.notes) ? r.notes.join(' ') : '' ];
+    const text = textParts.join(' ').toLowerCase();
     for (const k of keywords) if (text.includes(k)) return true;
     return false;
   });
 }
 
-const findings: Record<string, unknown>[] = [];
+interface Finding {
+  engine: string;
+  scenario: string;
+  flags?: Record<string, unknown>;
+  recCount: number;
+  recommendations?: import('../src/shared/wshp.types').Recommendation[];
+  gaps: string[];
+}
+
+const findings: Finding[] = [];
 
 // Airside scenarios
 const airProfile = { nominalTons: 5, airside: { designCFM: { cooling: 2400 }, externalStaticPressure: { design: 0.3, max: 0.6 } } } as unknown as Record<string, unknown>;
@@ -43,7 +66,7 @@ for (const s of airScenarios) {
   if (r.flags.staticPressureStatus && r.flags.staticPressureStatus !== 'ok') {
     if (!hasRelevantRecommendation('airside', r, ['static', 'esp', 'duct', 'pressure'])) gaps.push('No recommendation relating to static pressure / ductwork');
   }
-  findings.push({ engine: 'airside', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, gaps });
+  findings.push({ engine: 'airside', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, recommendations: r.recommendations || [], gaps });
 }
 
 // Refrigeration scenarios
@@ -68,7 +91,7 @@ for (const s of refScenarios) {
   if (r.flags.waterTransferStatus && r.flags.waterTransferStatus !== 'ok') {
     if (!hasRelevantRecommendation('refrigeration', r, ['water', 'delta', 'flow', 'pump', 'strainer'])) gaps.push('No recommendation addressing water-side ΔT / flow');
   }
-  findings.push({ engine: 'refrigeration', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, gaps });
+  findings.push({ engine: 'refrigeration', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, recommendations: r.recommendations || [], gaps });
 }
 
   // Hydronic scenarios (water loop)
@@ -87,7 +110,7 @@ for (const s of refScenarios) {
     if (r.flags.flowStatus && r.flags.flowStatus !== 'ok') {
       if (!Array.isArray(r.recommendations) || r.recommendations.length === 0) gaps.push('No hydronic recommendations present for flow abnormal');
     }
-    findings.push({ engine: 'hydronic', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, gaps });
+    findings.push({ engine: 'hydronic', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, recommendations: r.recommendations || [], gaps });
   }
 
   // Condenser approach scenarios
@@ -105,7 +128,7 @@ for (const s of refScenarios) {
     if (r.flags.subcoolingStatus && r.flags.subcoolingStatus !== 'ok') {
       if (!Array.isArray(r.recommendations) || r.recommendations.length === 0) gaps.push('No recommendation addressing condenser subcooling');
     }
-    findings.push({ engine: 'condenser_approach', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, gaps });
+    findings.push({ engine: 'condenser_approach', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, recommendations: r.recommendations || [], gaps });
   }
 
 // Recip compressor scenarios
@@ -123,7 +146,7 @@ for (const s of recipScenarios) {
   if (r.flags.currentStatus && r.flags.currentStatus !== 'ok') {
     if (!hasRelevantRecommendation('compressor_recip', r, ['current', 'amp', 'rla', 'overload'])) gaps.push('No recommendation for high/low current');
   }
-  findings.push({ engine: 'compressor_recip', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, gaps });
+  findings.push({ engine: 'compressor_recip', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, recommendations: r.recommendations || [], gaps });
 }
 
 // Scroll compressor
@@ -141,7 +164,7 @@ for (const s of scrollScenarios) {
   if (r.flags.currentStatus && r.flags.currentStatus !== 'ok') {
     if (!hasRelevantRecommendation('compressor', r, ['current', 'rla', 'amp'])) gaps.push('No recommendation for current abnormal');
   }
-  findings.push({ engine: 'compressor_scroll', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, gaps });
+  findings.push({ engine: 'compressor_scroll', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, recommendations: r.recommendations || [], gaps });
 }
 
 // Reversing valve
@@ -159,7 +182,7 @@ for (const s of revScenarios) {
   if (r.flags.solenoidStatus && r.flags.solenoidStatus !== 'ok') {
     if (!hasRelevantRecommendation('reversing_valve', r, ['solenoid', 'voltage'])) gaps.push('No recommendation for solenoid voltage issues');
   }
-  findings.push({ engine: 'reversing_valve', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, gaps });
+  findings.push({ engine: 'reversing_valve', scenario: s.name, flags: r.flags, recCount: r.recommendations?.length||0, recommendations: r.recommendations || [], gaps });
 }
 
 const now = new Date();
@@ -171,8 +194,19 @@ const filename = `docs/under-review/Recommendation_Gaps_${safeTs}.md`;
 fs.writeFileSync(filename, `# Recommendation Gaps Scan — ${iso}\n\nScanned at: ${easternNow.toISOString()}\n\n` + JSON.stringify(out, null, 2));
 console.log('Wrote', filename);
 
-test('recommendation gap scan should produce a doc with expected structure', () => {
+test('recommendation gap scan should produce a doc with expected structure and valid recommendations', () => {
   const contents = fs.readFileSync(filename, 'utf-8');
   expect(contents).toContain('Recommendation Gaps Scan');
   expect(contents).toContain('airside');
+
+  // Validate all generated recommendations for schema + wording
+  for (const f of findings) {
+    const recs = f.recommendations ?? [];
+    if (Array.isArray(recs) && recs.length) {
+      for (const r of recs) {
+        expect(validateRecommendation(r as unknown as import('../src/shared/wshp.types').Recommendation)).toBe(true);
+        expect(() => assertRecommendationTextSafe(r as unknown as import('../src/shared/wshp.types').Recommendation)).not.toThrow();
+      }
+    }
+  }
 });
