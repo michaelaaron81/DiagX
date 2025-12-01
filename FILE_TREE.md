@@ -9,7 +9,7 @@ This document shows the project structure with short descriptions and live GitHu
 ## High-Level Structure
 
 ```text
-Diagx-Omen/
+DiagX/
  .eslintrc.cjs
  .git/
  .github/
@@ -44,36 +44,36 @@ Diagx-Omen/
 ## Root Files
 
 - `README.md`  project overview and usage notes  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/README.md
+  https://github.com/michaelaaron81/DiagX/blob/main/README.md
 
 - `.github/PULL_REQUEST_TEMPLATE.md`  PR template used by the repo  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/.github/PULL_REQUEST_TEMPLATE.md
+  https://github.com/michaelaaron81/DiagX/blob/main/.github/PULL_REQUEST_TEMPLATE.md
 
 - `package.json`  Node/TypeScript project manifest and scripts  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/package.json
+  https://github.com/michaelaaron81/DiagX/blob/main/package.json
 
 - `package-lock.json`  exact dependency lockfile  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/package-lock.json
+  https://github.com/michaelaaron81/DiagX/blob/main/package-lock.json
 
 - `tsconfig.json`  TypeScript compiler configuration  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/tsconfig.json
+  https://github.com/michaelaaron81/DiagX/blob/main/tsconfig.json
 
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/vitest.config.ts
+  https://github.com/michaelaaron81/DiagX/blob/main/vitest.config.ts
 
 - `.eslintrc.cjs`  ESLint configuration  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/.eslintrc.cjs
+  https://github.com/michaelaaron81/DiagX/blob/main/.eslintrc.cjs
 
 - `.prettierrc`  Prettier formatting configuration  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/.prettierrc
+  https://github.com/michaelaaron81/DiagX/blob/main/.prettierrc
 
 - `.vscode/`  workspace/editor settings for VS Code  
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/.vscode
+  https://github.com/michaelaaron81/DiagX/tree/main/.vscode
 
 - `.gitignore`  files/paths excluded from git  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/.gitignore
+  https://github.com/michaelaaron81/DiagX/blob/main/.gitignore
 
 - `dist/`  compiled output (when `tsc` build is run)  
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/dist
+  https://github.com/michaelaaron81/DiagX/tree/main/dist
 
 - `.git/`  git metadata (not browsed in GitHub UI; internal to git)
 
@@ -98,10 +98,10 @@ docs/
 Notes and highlights:
 
 - `docs/backups/`  archived snapshots and zips of the docs folder (e.g., `2025-11-29/docs_backup_2025-11-29.zip`)
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/docs/backups
+  https://github.com/michaelaaron81/DiagX/tree/main/docs/backups
 
 - `docs/process/NO_OEM_IOM.md`  policy on excluding OEM/IOM tables from the repo  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/NO_OEM_IOM.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/NO_OEM_IOM.md
 
 `docs/process/DiagX_engineer_seed_V2.md`  engineer-facing seed and development guidance  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_engineer_seed_V2.md
@@ -134,13 +134,13 @@ Recent artifacts (backup branch)
 - `docs/under-review/`  staging area for machine-generated reports pending human review before promotion into `docs/audits/` or `docs/gap-scans/`
 
 - `docs/inventory/DiagX_Engines_Inventory.md`  canonical list of engine entry points and inventory  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/inventory/DiagX_Engines_Inventory.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/inventory/DiagX_Engines_Inventory.md
 
 - `docs/inventory/Engines_Core_Spec.md`  core engine result contract and normalization guidance (EngineResult<V,F>)  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/inventory/Engines_Core_Spec.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/inventory/Engines_Core_Spec.md
 
 - `docs/engines/README.md`  short pointer to canonical `docs/inventory` specs and engine authoring guides
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/engines/README.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/engines/README.md
 
 ---
 

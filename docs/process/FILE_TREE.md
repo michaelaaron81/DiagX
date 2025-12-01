@@ -9,7 +9,7 @@ This document shows the project structure with short descriptions and live GitHu
 ## High-Level Structure
 
 ```text
-Diagx-Omen/
+DiagX/
 ├─ .eslintrc.cjs
 ├─ .git/
 ├─ .prettierrc
@@ -39,31 +39,31 @@ Diagx-Omen/
 ## Root Files
 
 - `README.md` – project overview and usage notes  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/README.md
+  https://github.com/michaelaaron81/DiagX/blob/main/README.md
 
  - `docs/process/Roadmap.docx` – roadmap / planning document (internal)  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/Roadmap.docx
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/Roadmap.docx
 
 - `package.json` – Node/TypeScript project manifest and scripts  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/package.json
+  https://github.com/michaelaaron81/DiagX/blob/main/package.json
 
 - `package-lock.json` – exact dependency lockfile  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/package-lock.json
+  https://github.com/michaelaaron81/DiagX/blob/main/package-lock.json
 
 - `tsconfig.json` – TypeScript compiler configuration  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/tsconfig.json
+  https://github.com/michaelaaron81/DiagX/blob/main/tsconfig.json
 
 - `.eslintrc.cjs` – ESLint configuration  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/.eslintrc.cjs
+  https://github.com/michaelaaron81/DiagX/blob/main/.eslintrc.cjs
 
 - `.prettierrc` – Prettier formatting configuration  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/.prettierrc
+  https://github.com/michaelaaron81/DiagX/blob/main/.prettierrc
 
 - `.vscode/` – workspace/editor settings for VS Code  
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/.vscode
+  https://github.com/michaelaaron81/DiagX/tree/main/.vscode
 
 - `dist/` – compiled output (when `tsc` build is run)  
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/dist
+  https://github.com/michaelaaron81/DiagX/tree/main/dist
 
 - `.git/` – git metadata (not browsed in GitHub UI; internal to git)
 
@@ -92,34 +92,34 @@ docs/
 ```
 
  - `docs/process/NO_OEM_IOM.md` – policy on excluding OEM/IOM tables from the repo  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/NO_OEM_IOM.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/NO_OEM_IOM.md
 
 - `docs/process/DiagX_engineer_seed_V2.md` – engineer-facing seed (V2) defining how the DiagX engine should behave and be used during development  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_engineer_seed_V2.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/DiagX_engineer_seed_V2.md
 
 - `docs/process/DiagX_master_seed_V4.md` – master seed V4; canonical product, domain, and behavior spec for DiagX  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_master_seed_V4.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/DiagX_master_seed_V4.md
 
  - `docs/process/DiagX_Safety_Manual_Outline.md` – section-only safety manual outline  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/DiagX_Safety_Manual_Outline.md
 
  - `docs/process/Local_Editor_Guardrails.md` – local editor / VS Code guardrails for DiagX  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/process/Local_Editor_Guardrails.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/process/Local_Editor_Guardrails.md
 
 - `docs/CHANGELOG.md` – high-level human-readable changelog  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/CHANGELOG.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/CHANGELOG.md
 
  - `docs/audits/Test_Run_Vitest_2025-11-29.md` – detailed Vitest run and scenario matrix log  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/audits/Test_Run_Vitest_2025-11-29.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/audits/Test_Run_Vitest_2025-11-29.md
 
  - `docs/audits/Test_Run_Vitest_2025-11-29-Integrity-Report.md` – integrity report and final test verification for 2025-11-29  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/audits/Test_Run_Vitest_2025-11-29-Integrity-Report.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/audits/Test_Run_Vitest_2025-11-29-Integrity-Report.md
 
  - `docs/inventory/DiagX_Engines_Inventory.md` – canonical list of engine entry points and inventory used during normalization  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/inventory/DiagX_Engines_Inventory.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/inventory/DiagX_Engines_Inventory.md
 
  - `docs/inventory/Engines_Core_Spec.md` – core engine result contract and normalization guidance (EngineResult<V,F>)  
-  https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/inventory/Engines_Core_Spec.md
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/inventory/Engines_Core_Spec.md
 
  - `docs/plans/Plan_to_fix_existing_integrity_issues.md` – follow-up plan and TODOs discovered during integrity sweep  
   https://github.com/michaelaaron81/Diagx-Omen/blob/main/docs/plans/Plan_to_fix_existing_integrity_issues.md
@@ -167,57 +167,57 @@ Key tests (each has its own JSON fixtures):
 
 - Airside:
   - `airside.engine.full.test.ts`, `airside.module.test.ts` – airside engine/module behavior  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/airside.engine.full.test.ts  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/airside.module.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/airside.engine.full.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/airside.module.test.ts  
   - `airside.validation.test.ts` – airside measurement validation behavior  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/airside.validation.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/airside.validation.test.ts  
   - `airside.recommendations.test.ts` – airside recommendation helper behavior  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/airside.recommendations.test.ts
+    https://github.com/michaelaaron81/DiagX/blob/main/test/airside.recommendations.test.ts
 
 - Compressors:
   - `compressor.recip.engine.full.test.ts`, `compressor.recip.module.test.ts`, `compressor.recip.recommendations.test.ts` – recip compressor engine, module, and recommendation generator  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/compressor.recip.engine.full.test.ts  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/compressor.recip.module.test.ts  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/compressor.recip.recommendations.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/compressor.recip.engine.full.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/compressor.recip.module.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/compressor.recip.recommendations.test.ts  
   - `compressor.scroll.engine.full.test.ts`, `compressor.scroll.module.test.ts`, `compressor.scroll.recommendations.test.ts` – scroll compressor diagnostics and recommendations  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/compressor.scroll.engine.full.test.ts  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/compressor.scroll.module.test.ts  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/compressor.scroll.recommendations.test.ts
+    https://github.com/michaelaaron81/DiagX/blob/main/test/compressor.scroll.engine.full.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/compressor.scroll.module.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/compressor.scroll.recommendations.test.ts
 
 - Refrigeration:
   - `refrigeration.engine.full.test.ts`, `refrigeration.engine.test.ts` – refrigeration engine and WSHP wrapper behavior  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/refrigeration.engine.full.test.ts  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/refrigeration.engine.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/refrigeration.engine.full.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/refrigeration.engine.test.ts  
   - `refrigeration.ptoverride.test.ts`, `refrigeration.ptutils.test.ts` – PT overrides and PT table validation  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/refrigeration.ptoverride.test.ts  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/refrigeration.ptutils.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/refrigeration.ptoverride.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/refrigeration.ptutils.test.ts  
   - `refrigeration.validation.test.ts` – refrigeration measurement validation behavior  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/refrigeration.validation.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/refrigeration.validation.test.ts  
   - `refrigeration.recommendations.test.ts` – refrigeration recommendation helper behavior  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/refrigeration.recommendations.test.ts
+    https://github.com/michaelaaron81/DiagX/blob/main/test/refrigeration.recommendations.test.ts  
 
 - Reversing valve:
   - `reversingvalve.engine.full.test.ts`, `reversingvalve.module.test.ts` – reversing valve engine/module tests  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/reversingvalve.engine.full.test.ts  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/reversingvalve.module.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/reversingvalve.engine.full.test.ts  
+    https://github.com/michaelaaron81/DiagX/blob/main/test/reversingvalve.module.test.ts  
   - `reversingvalve.recommendations.test.ts` – reversing valve recommendation helper behavior  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/reversingvalve.recommendations.test.ts
+    https://github.com/michaelaaron81/DiagX/blob/main/test/reversingvalve.recommendations.test.ts
 
 - Helpers:
   - `localOverrides.test.ts` – ensures local PT overrides behave as designed  
-    https://github.com/michaelaaron81/Diagx-Omen/blob/main/test/localOverrides.test.ts
+    https://github.com/michaelaaron81/DiagX/blob/main/test/localOverrides.test.ts
 
 Fixtures:
 
 - `test/fixtures/airside/*.json` – nominal/low-flow/frozen airside scenarios  
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/test/fixtures/airside
+  https://github.com/michaelaaron81/DiagX/tree/main/test/fixtures/airside
 
 - `test/fixtures/compressor/recip/*.json`, `test/fixtures/compressor/scroll/*.json` – recip & scroll compressor cases  
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/test/fixtures/compressor
+  https://github.com/michaelaaron81/DiagX/tree/main/test/fixtures/compressor
 
 - `test/fixtures/refrigeration/*.json` – refrigeration charge and operating state examples  
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/test/fixtures/refrigeration
+  https://github.com/michaelaaron81/DiagX/tree/main/test/fixtures/refrigeration
 
 - `test/fixtures/reversingValve/*.json` – reversing valve pattern cases (nominal, stuck, reversed, partial leak)  
-  https://github.com/michaelaaron81/Diagx-Omen/tree/main/test/fixtures/reversingValve
+  https://github.com/michaelaaron81/DiagX/tree/main/test/fixtures/reversingValve
 
