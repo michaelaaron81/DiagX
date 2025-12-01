@@ -116,6 +116,7 @@ Notes and highlights:
   https://github.com/michaelaaron81/DiagX/blob/main/docs/CHANGELOG.md
 
 - `docs/audits/`  audit logs and test run reports (Vitest logs, integrity checks)
+  - Consolidated test & lint report (latest): https://github.com/michaelaaron81/DiagX/blob/main/docs/audits/Consolidated_Test_and_Lint_Report_2025-11-30.md
 
 Recent generation artifacts (promoted into `docs/audits/`):
 
@@ -135,6 +136,12 @@ Recent artifacts (backup branch)
 
 - `docs/inventory/DiagX_Engines_Inventory.md`  canonical list of engine entry points and inventory  
   https://github.com/michaelaaron81/DiagX/blob/main/docs/inventory/DiagX_Engines_Inventory.md
+
+Recent under-review artifacts (generated):
+ - https://github.com/michaelaaron81/DiagX/blob/main/docs/under-review/Recommendation_Gaps_2025-11-30T23-34-49.md
+ - https://github.com/michaelaaron81/DiagX/blob/main/docs/under-review/Recip_Stress_Test_Log_2025-11-30T23-34-48.md
+ - https://github.com/michaelaaron81/DiagX/blob/main/docs/under-review/Scroll_Stress_Test_Log_2025-11-30T23-34-49.md
+ - https://github.com/michaelaaron81/DiagX/blob/main/docs/under-review/Combined_Profile_Stress_Test_Audit_2025-11-30T23-34-49.md
 
 - `docs/inventory/Engines_Core_Spec.md`  core engine result contract and normalization guidance (EngineResult<V,F>)  
   https://github.com/michaelaaron81/DiagX/blob/main/docs/inventory/Engines_Core_Spec.md

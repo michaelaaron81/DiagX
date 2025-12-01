@@ -111,6 +111,8 @@ docs/
 
  - `docs/audits/Test_Run_Vitest_2025-11-29.md` – detailed Vitest run and scenario matrix log  
   https://github.com/michaelaaron81/DiagX/blob/main/docs/audits/Test_Run_Vitest_2025-11-29.md
+ - `docs/audits/Consolidated_Test_and_Lint_Report_2025-11-30.md` – consolidated report for most recent run  
+  https://github.com/michaelaaron81/DiagX/blob/main/docs/audits/Consolidated_Test_and_Lint_Report_2025-11-30.md
 
  - `docs/audits/Test_Run_Vitest_2025-11-29-Integrity-Report.md` – integrity report and final test verification for 2025-11-29  
   https://github.com/michaelaaron81/DiagX/blob/main/docs/audits/Test_Run_Vitest_2025-11-29-Integrity-Report.md
