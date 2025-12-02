@@ -2,6 +2,38 @@
 
 All notable changes to this repository are recorded in this file. This project follows a lightweight, date-first changelog.
 
+## 2025-12-01 — Phase 3.3 — Engine Documentation & Licensing
+
+### License Integration
+- Added DiagX Internal License (DIL-1.0) at repository root (`LICENSE`)
+- All engine documentation files include DIL-1.0 header
+- Phase-3.3 strategy document includes DIL-1.0 header
+
+### Engine Documentation Created
+Seven structural engine contract documents following mandatory template:
+- `docs/engines/airside.engine.md` — Airside diagnostic engine contract
+- `docs/engines/refrigeration.engine.md` — Refrigeration diagnostic engine contract
+- `docs/engines/hydronic.engine.md` — Hydronic diagnostic engine contract
+- `docs/engines/condenserApproach.engine.md` — Condenser approach diagnostic engine contract
+- `docs/engines/reversingValve.engine.md` — Reversing valve diagnostic engine contract
+- `docs/engines/scrollCompressor.engine.md` — Scroll compressor diagnostic engine contract
+- `docs/engines/recipCompressor.engine.md` — Reciprocating compressor diagnostic engine contract
+
+### Documentation Guardrails Enforced
+- NO thresholds exposed
+- NO physics formulas revealed
+- NO recommendation text included
+- NO procedural guidance provided
+- NO OEM/IOM references embedded
+- Structural inputs/outputs only
+
+### No Code Changes
+- All 135 tests pass
+- No engine behavior altered
+- CombinedProfileResult unchanged
+
+---
+
 ## 2025-12-01 — Phase 3.1 — Shared Types + Profile Runner Structural Layer
 
 ### Shared Types Created
