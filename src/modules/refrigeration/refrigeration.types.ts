@@ -42,3 +42,30 @@ export interface RefrigerationMeasurements {
   condensingPressure?: number | null; // psig - condensing/discharge pressure for condenser approach analysis
 }
 
+// Phase-3: Canonical values/flags exports (hoisted from refrigeration.engine.ts)
+import { DiagnosticStatus } from '../../shared/wshp.types';
+
+export interface RefrigerationValues {
+  suctionPressure: number;
+  dischargePressure: number;
+
+  suctionSatTemp: number;
+  dischargeSatTemp: number;
+
+  superheat: number;
+  subcooling: number;
+  compressionRatio: number;
+  waterDeltaT: number;
+
+  dischargeSuperheat?: number;
+}
+
+export interface RefrigerationFlags {
+  superheatStatus: DiagnosticStatus;
+  subcoolingStatus: DiagnosticStatus;
+  compressionRatioStatus: DiagnosticStatus;
+  waterTransferStatus: DiagnosticStatus;
+  refrigerantProfile: RefrigerantProfileType;
+  disclaimers?: string[];
+}
+

@@ -1,6 +1,9 @@
 export interface WaterSideMeasurements {
     enteringWaterTemp?: number | null;
     leavingWaterTemp?: number | null;
+    loopFluidTemp?: number | null;
+    enteringLoopTemp?: number | null;
+    leavingLoopTemp?: number | null;
     flowGpm?: number | null;
     ambientWetBulb?: number | null;
     ambientDryBulb?: number | null;

@@ -27,13 +27,15 @@ function buildHydronicSourceEngineInput(
         : 'unknown',
     profileConfig: {
       // Map existing profile fields into HydronicSourceProfileConfig as needed
+      designFlowGPM: hydronicProfile.flowRate ?? undefined,
+      designDeltaT: hydronicProfile.expectedDeltaT ?? undefined,
     },
   } as HydronicSourceContext;
 
   const inputMeasurements: HydronicSourceMeasurements = {
     enteringWaterTemp: hydronicMeas.enteringWaterTemp ?? null,
     leavingWaterTemp: hydronicMeas.leavingWaterTemp ?? null,
-    loopFluidTemp: (hydronicMeas as any).loopFluidTemp ?? (hydronicMeas as any).enteringLoopTemp ?? (hydronicMeas as any).leavingLoopTemp ?? null,
+    loopFluidTemp: hydronicMeas.loopFluidTemp ?? hydronicMeas.enteringLoopTemp ?? hydronicMeas.leavingLoopTemp ?? null,
     flowGpm: hydronicMeas.flowGpm ?? null,
     ambientWetBulb: hydronicMeas.ambientWetBulb ?? null,
     ambientDryBulb: hydronicMeas.ambientDryBulb ?? null,

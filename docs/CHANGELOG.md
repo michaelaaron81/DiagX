@@ -2,6 +2,74 @@
 
 All notable changes to this repository are recorded in this file. This project follows a lightweight, date-first changelog.
 
+## 2025-12-01 — Phase 3.1 — Shared Types + Profile Runner Structural Layer
+
+### Shared Types Created
+- `ProfileInputSchema` — canonical ingestion surface with `Partial<Measurements>` per domain
+- `CompletenessLevel` — `'full' | 'limited' | 'advisory' | 'skipped'`
+- `ModuleResult<V,F>` — extends `EngineResult` with validation, completeness, summary
+- 7 domain-specific aliases: `AirsideModuleResult`, `RefrigerationModuleResult`, etc.
+- `CombinedProfileResult` — top-level orchestrator output contract
+
+### Validation
+- Created `runTierAValidation()` with 6 structural input checks:
+  1. Null profile
+  2. Negative pressures
+  3. Impossible temperatures (< -50°F or > 300°F)
+  4. Contradictory mode vs. measured temps
+  5. Missing required-for-engine fields per domain
+  6. Airflow override plausibility hook
+
+### Completeness Classifier
+- Created `classifyCompleteness()` to gate domain execution based on available measurements
+
+### Orchestrator Refactor
+- Refactored `wshp.diagx.ts` with dual-path architecture:
+  - `runWshpDiagx()` — legacy function, full backward compatibility
+  - `runCombinedProfile()` — new function returning `CombinedProfileResult`
+
+### Type Alignment (Architect Override)
+- Added `AirsideValues` alias in `airside.types.ts`
+- Added `RefrigerationValues`, `RefrigerationFlags` interfaces in `refrigeration.types.ts`
+- No engine behavior changed; all 135 tests pass
+
+### Documentation
+- Created implementation report: `docs/plans/Phase-3.1-Shared-Types-Implementation.md`
+
+---
+
+## 2025-12-01 — Phase 3.1 — Airside Airflow Override + TESP Safety Gate
+
+### Features
+- Added technician-supplied airflow override capability to airside module (`airflowCFMOverride` field)
+- Implemented physics-based plausibility validation using TESP/CFM-per-ton matrix (`validateAirflowOverrideCFM`)
+- Added `AirflowSource` type to track origin of authoritative airflow value (`inferred_deltaT`, `technician_override`, `measured`)
+- Added `airflowCFM` and `airflowSource` fields to `AirsideEngineValues` and `AirsideEngineResult`
+- Added `totalExternalStatic` field for explicit TESP input
+- Added `airflowOverrideNote` field for technician documentation
+
+### Validation
+- Override gating at module layer with clear accept/reject logic
+- Rejection reasons added to disclaimers when override fails plausibility checks
+- Acceptance documented in disclaimers with technician note when provided
+
+### Tests
+- Added 17 new tests in `test/airside.override.test.ts`
+- Full test suite: 135 tests passing
+- ESLint clean
+
+### Documentation
+- Created detailed implementation plan: `docs/plans/Phase-3.1-Airside-Override-Implementation.md`
+- Updated measurement help entries for new fields
+
+### Previous Session Work (same date)
+- Completed Phase 2.5-lite: Removed fake `dischargeSuperheat` metric from scroll compressor engine
+- Created `COMMANDS.md` with all script and git commands
+- Created `scripts/consolidate-under-review.js` for audit report generation
+- Updated `FILE_TREE.md` with current structure and git links
+
+---
+
 ## 2025-11-30 — Phase 2.4 cleanup (diag-only recommendations, docs, CI)
 
 - Locked the shared `Recommendation` contract to diagnostic-only outputs (id, domain, severity, intent, summary, rationale, notes, requiresShutdown).
@@ -14,16 +82,3 @@ All notable changes to this repository are recorded in this file. This project f
 Next steps:
 - Review CI run on the branch and merge to `main` after review.
 - Keep `coverage/` out of the repo (it's intentionally ignored now) and regenerate any archival artifacts only after the canonical tests + docs are verified.
-
-## 2025-12-01 — Phase 3 — Profile wiring & config validation block
-
-- Phase 2.4 (schema + lint cleanup) is complete and merged on `main`.
-- Starting Phase 3: focus on profile wiring across engines and introducing a structured config validation/guard block so that profiles passed into engines are validated, clearly typed, and have safe defaults.
-- Initial work planned for Phase 3:
-	- Wire canonical profile fields into module entry points so engines consume typed profiles (avoid any runtime-shaping/casts).
-	- Add a config-validation layer (JSON schema + runtime checks) for profiles and engine configuration to prevent malformed inputs from reaching engine logic.
-	- Expand tests to include negative cases for malformed/partial profiles and confirm safe handling.
-	- Update developer docs and local VS Code guardrails to document expected profile shapes and how to supply safe overrides.
-
-Next steps for Phase 3:
-- Begin the same iterative approach used in Phase 2.4: enforce schema + add test coverage for each module, remove remaining `any` in `src/` where required and tighten build/lint rules in CI.

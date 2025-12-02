@@ -1,4 +1,6 @@
 import { test, expect } from 'vitest';
+import { validateRecommendation } from '../src/shared/recommendation.schema';
+import { assertRecommendationTextSafe } from './helpers/recommendationGuards';
 import { runAirsideEngine } from '../src/modules/airside/airside.engine';
 import { runRefrigerationEngine } from '../src/modules/refrigeration/refrigeration.engine';
 import { runReciprocatingCompressorEngine } from '../src/modules/compressor/recip.engine';
@@ -119,6 +121,16 @@ test('combined profile stress run', () => {
   expect(air.status).toBeDefined();
   expect(ref.status).toBeDefined();
   expect(Array.isArray(air.recommendations)).toBe(true);
+
+  // Validate all recommendations that were produced in this combined run
+  const all = [air, ref, rec, scroll, rev, hyd, condenser];
+  for (const svc of all) {
+    const recs = svc.recommendations || [];
+    for (const r of recs) {
+      expect(validateRecommendation(r)).toBe(true);
+      expect(() => assertRecommendationTextSafe(r)).not.toThrow();
+    }
+  }
 
   // Cross-check: airside critical should be present and refrigeration should have non-ok flag in some category
   expect(air.status).toBe('critical');

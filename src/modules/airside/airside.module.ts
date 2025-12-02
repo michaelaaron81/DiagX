@@ -2,7 +2,7 @@ import { DiagnosticModule, ValidationResult, MeasurementHelp, DiagnosisExplanati
 import { WaterCooledUnitProfile } from '../../wshp/wshp.profile';
 import { AirsideMeasurements, AirsideEngineResult } from './airside.types';
 import { runAirsideEngine, validateAirsideMeasurements as engineValidate } from './airside.engine';
-import { validateAirsideMeasurements } from './airside.validation';
+import { validateAirsideMeasurements, validateAirflowOverrideCFM } from './airside.validation';
 
 export const airsideMetadata: ModuleMetadata = {
   id: 'wshp_airside',
@@ -27,6 +27,9 @@ export const airsideHelp: ModuleHelp<AirsideMeasurements> = {
     airVelocity: { field: 'airVelocity', label: 'Air Velocity', description: 'Measured in FPM', units: 'FPM' },
     measuredCFM: { field: 'measuredCFM', label: 'Measured CFM', description: 'Actual airflow measured at supply grilles', units: 'CFM' },
     mode: { field: 'mode', label: 'Operating Mode', description: 'cooling | heating | fan_only', units: 'mode' },
+    airflowCFMOverride: { field: 'airflowCFMOverride', label: 'Airflow Override (CFM)', description: 'Technician-supplied airflow override value', units: 'CFM' },
+    airflowOverrideNote: { field: 'airflowOverrideNote', label: 'Override Note', description: 'Technician note explaining override source/method', units: '' },
+    totalExternalStatic: { field: 'totalExternalStatic', label: 'Total External Static', description: 'Supply + return static pressure', units: 'in W.C.' },
   },
   diagnosticHelp: { whatWeCheck: 'Temperature delta, airflow (CFM/ton), static pressure', whyItMatters: 'Airflow affects capacity and reliability', commonIssues: ['Dirty filters', 'Closed dampers', 'Wrong blower setting'] },
   // Important: we do NOT store or bundle OEM/manufacturer performance tables in the repository.
@@ -56,7 +59,67 @@ export class AirsideDiagnosticModule implements DiagnosticModule<WaterCooledUnit
       }
     }
 
-    return runAirsideEngine(measurements, profile);
+    // Create a mutable copy of measurements for potential override injection
+    const effectiveMeasurements = { ...measurements };
+    let overrideAccepted = false;
+    let overrideRejectionReason: string | undefined;
+
+    // Handle technician-supplied airflow override if present
+    if (measurements.airflowCFMOverride !== undefined && measurements.airflowCFMOverride > 0) {
+      // Use totalExternalStatic if provided, otherwise fall back to externalStatic
+      const tesp = measurements.totalExternalStatic ?? measurements.externalStatic;
+      
+      const overrideCheck = validateAirflowOverrideCFM(
+        measurements.airflowCFMOverride,
+        profile.nominalTons,
+        tesp
+      );
+
+      if (overrideCheck.accepted) {
+        // Override passes plausibility checks - inject as measuredCFM for engine
+        effectiveMeasurements.measuredCFM = measurements.airflowCFMOverride;
+        overrideAccepted = true;
+      } else {
+        // Override rejected - store reason for disclaimer/recommendation
+        overrideRejectionReason = overrideCheck.reason;
+      }
+    }
+
+    const result = runAirsideEngine(effectiveMeasurements, profile);
+
+    // If override was accepted, update airflowSource to reflect technician override
+    if (overrideAccepted && result.values) {
+      result.values.airflowSource = 'technician_override';
+      result.values.airflowCFM = measurements.airflowCFMOverride;
+      // Update flattened fields as well
+      result.airflowSource = 'technician_override';
+      result.airflowCFM = measurements.airflowCFMOverride;
+      
+      // Add disclaimer about override usage
+      if (result.flags?.disclaimers) {
+        result.flags.disclaimers.push(
+          `Technician airflow override of ${measurements.airflowCFMOverride} CFM was accepted and used for calculations.${measurements.airflowOverrideNote ? ` Note: ${measurements.airflowOverrideNote}` : ''}`
+        );
+      }
+      if (result.disclaimers) {
+        result.disclaimers.push(
+          `Technician airflow override of ${measurements.airflowCFMOverride} CFM was accepted and used for calculations.${measurements.airflowOverrideNote ? ` Note: ${measurements.airflowOverrideNote}` : ''}`
+        );
+      }
+    }
+
+    // If override was rejected, add warning to disclaimers
+    if (overrideRejectionReason) {
+      const warningMessage = `Airflow override rejected: ${overrideRejectionReason} — falling back to inferred/measured airflow.`;
+      if (result.flags?.disclaimers) {
+        result.flags.disclaimers.push(warningMessage);
+      }
+      if (result.disclaimers) {
+        result.disclaimers.push(warningMessage);
+      }
+    }
+
+    return result;
   }
 
   getRecommendations(diagnosis: AirsideEngineResult) {

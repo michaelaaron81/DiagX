@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { runRefrigerationEngine } from '../src/modules/refrigeration/refrigeration.engine';
+import { validateRecommendation } from '../src/shared/recommendation.schema';
+import { assertRecommendationTextSafe } from './helpers/recommendationGuards';
 
 describe('refrigeration engine - full PT chart based tests', () => {
   it('nominal fixture should return ok status', () => {
@@ -37,6 +39,9 @@ describe('refrigeration engine - full PT chart based tests', () => {
 
     // Phase-2 engines are text-free. Check recommendations reflect undercharge instead.
     const recText = (result.recommendations || []).map(r => {
+      // ensure recommendations are valid and wording-safe
+      expect(validateRecommendation(r)).toBe(true);
+      expect(() => assertRecommendationTextSafe(r)).not.toThrow();
       const notes = Array.isArray(((r as unknown) as Record<string, unknown>).notes as unknown) ? (((r as unknown) as Record<string, unknown>).notes as Array<string>).join(' ') : '';
       return ((((r as unknown) as Record<string, unknown>).summary as string) || (((r as unknown) as Record<string, unknown>).rationale as string) || notes || '').toLowerCase();
     }).join(' ');
@@ -58,6 +63,9 @@ describe('refrigeration engine - full PT chart based tests', () => {
     } as unknown as Record<string, unknown>);
 
     const recText2 = (result.recommendations || []).map(r => {
+      // ensure recommendations are valid and wording-safe
+      expect(validateRecommendation(r)).toBe(true);
+      expect(() => assertRecommendationTextSafe(r)).not.toThrow();
       const notes = Array.isArray(((r as unknown) as Record<string, unknown>).notes as unknown) ? (((r as unknown) as Record<string, unknown>).notes as Array<string>).join(' ') : '';
       return ((((r as unknown) as Record<string, unknown>).summary as string) || (((r as unknown) as Record<string, unknown>).rationale as string) || notes || '').toLowerCase();
     }).join(' ');

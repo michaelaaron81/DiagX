@@ -74,12 +74,6 @@ export function runScrollCompressorEngine(measurements: ScrollCompressorMeasurem
 
   const compAnalysis = analyzeCompressionRatio(compressionRatio);
 
-  let dischargeSuperheat: number | undefined = undefined;
-  if (measurements.dischargeTemp !== undefined) {
-    // crude: compare discharge temp to suction (informational) — true superheat requires saturation temp
-    dischargeSuperheat = round(measurements.dischargeTemp - measurements.suctionTemp, 1);
-  }
-
   // read only shallow, well-known profile fields (avoid deep, appliance-specific config)
   const rla = profile?.compressor?.rla;
   const currentAnalysis = analyzeCurrent(measurements.runningCurrent, rla);
@@ -103,7 +97,6 @@ export function runScrollCompressorEngine(measurements: ScrollCompressorMeasurem
     suctionPressure: suction,
     dischargePressure: discharge,
     compressionRatio: round(compressionRatio, 2),
-    dischargeSuperheat,
     currentDraw: measurements.runningCurrent,
   };
 
@@ -124,7 +117,6 @@ export function runScrollCompressorEngine(measurements: ScrollCompressorMeasurem
     dischargePressure: values.dischargePressure,
     compressionRatio: values.compressionRatio,
     compressionStatus: flags.compressionStatus,
-    dischargeSuperheat: values.dischargeSuperheat,
     currentDraw: values.currentDraw,
     currentStatus: flags.currentStatus,
     disclaimers: flags.disclaimers,

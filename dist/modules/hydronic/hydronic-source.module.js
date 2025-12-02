@@ -11,7 +11,9 @@ function buildHydronicSourceEngineInput(profile, measurements) {
                 ? 'closed_loop'
                 : 'unknown',
         profileConfig: {
-        // Map existing profile fields into HydronicSourceProfileConfig as needed
+            // Map existing profile fields into HydronicSourceProfileConfig as needed
+            designFlowGPM: hydronicProfile.flowRate ?? undefined,
+            designDeltaT: hydronicProfile.expectedDeltaT ?? undefined,
         },
     };
     const inputMeasurements = {

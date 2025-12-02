@@ -2,6 +2,10 @@
 export interface WaterSideMeasurements {
   enteringWaterTemp?: number | null;
   leavingWaterTemp?: number | null;
+  // Optional alternative loop-level fields used by hydronic engines
+  loopFluidTemp?: number | null;
+  enteringLoopTemp?: number | null;
+  leavingLoopTemp?: number | null;
   flowGpm?: number | null;
   ambientWetBulb?: number | null;
   ambientDryBulb?: number | null;

@@ -65,7 +65,14 @@ function evaluateFlags(values, input) {
     })();
     // derive design flow GPM if available, prefer explicit designFlowGPM in profileConfig
     const expectedProfile = {
-        expectedDeltaT: profileConfig?.designDeltaT ? { ...profileConfig.designDeltaT, source: 'profile' } : undefined,
+        expectedDeltaT: profileConfig?.designDeltaT
+            ? {
+                min: profileConfig.designDeltaT.min,
+                ideal: profileConfig.designDeltaT.ideal,
+                max: profileConfig.designDeltaT.max,
+                source: 'profile',
+            }
+            : undefined,
         designFlowGPM: profileConfig?.designFlowGPM ?? undefined,
     };
     const expected = getExpectedHydronicDeltaT(expectedProfile);
@@ -120,7 +127,14 @@ export function runHydronicSourceEngine(input) {
     // derive design flow for normalized index
     // Map profileConfig.designDeltaT (which may include manufacturer/nameplate source) into HydronicProfileConfig shape
     const expectedProfileFromContext = {
-        expectedDeltaT: input.context.profileConfig?.designDeltaT ? { ...input.context.profileConfig.designDeltaT, source: 'profile' } : undefined,
+        expectedDeltaT: input.context.profileConfig?.designDeltaT
+            ? {
+                min: input.context.profileConfig.designDeltaT.min,
+                ideal: input.context.profileConfig.designDeltaT.ideal,
+                max: input.context.profileConfig.designDeltaT.max,
+                source: 'profile',
+            }
+            : undefined,
         designFlowGPM: input.context.profileConfig?.designFlowGPM ?? undefined,
     };
     const expected = getExpectedHydronicDeltaT(expectedProfileFromContext);

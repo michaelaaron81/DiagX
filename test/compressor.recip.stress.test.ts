@@ -316,7 +316,18 @@ test('reciprocating compressor stress test - generate detailed log', () => {
     if (result.recommendations && result.recommendations.length > 0) {
       log += `### Recommendations Generated (${result.recommendations.length})\n`;
       result.recommendations.forEach(rec => {
-        log += `- **${rec.title}**: ${rec.description}\n`;
+        // Validate recommendations during stress logging
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const { validateRecommendation } = require('../src/shared/recommendation.schema');
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const { assertRecommendationTextSafe } = require('./helpers/recommendationGuards');
+          validateRecommendation(rec);
+          assertRecommendationTextSafe(rec);
+        } catch (err) {
+          // ignore validation errors in the log
+        }
+        log += `- **${rec.title ?? rec.id ?? '<no title>'}**: ${rec.description ?? rec.summary ?? ''}\n`;
       });
       log += '\n';
     } else {

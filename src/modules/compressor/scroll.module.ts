@@ -1,4 +1,4 @@
-import { DiagnosticModule, ValidationResult, Recommendation, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp, formatTemperature } from '../../shared/wshp.types';
+import { DiagnosticModule, ValidationResult, Recommendation, MeasurementHelp, DiagnosisExplanation, ModuleMetadata, ModuleHelp } from '../../shared/wshp.types';
 import { ScrollCompressorMeasurements, ScrollCompressorResult, ScrollCompressorConfig } from './scroll.types';
 import { runScrollCompressorEngine } from './scroll.engine';
 
@@ -50,7 +50,6 @@ export class ScrollCompressorDiagnosticModule implements DiagnosticModule<Scroll
     lines.push(`COMPRESSOR (Scroll) - ${diagnosis.status.toUpperCase()}`);
     lines.push('─'.repeat(60));
     lines.push(`Compression ratio: ${diagnosis.compressionRatio}:1`);
-    if (diagnosis.dischargeSuperheat !== undefined) lines.push(`Discharge delta: ${formatTemperature(diagnosis.dischargeSuperheat)}`);
     if (diagnosis.disclaimers && diagnosis.disclaimers.length) {
       lines.push('');
       lines.push('IMPORTANT:');

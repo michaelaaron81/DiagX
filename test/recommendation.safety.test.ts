@@ -10,6 +10,7 @@ import { generateRecommendations as generateAirsideRecommendations } from '../sr
 import { generateRecommendations as generateReversingRecommendations } from '../src/modules/reversingValve/reversing.engine';
 
 import type { Recommendation } from '../src/shared/wshp.types';
+import { validateRecommendation } from '../src/shared/recommendation.schema';
 
 const forbiddenKeys = ['estimatedTime', 'requiredParts', 'estimatedCost'];
 
@@ -22,6 +23,8 @@ const pricePattern = /\$|\bcost\b|\bprice\b|\bestimate(?:d)?\b|\bfee\b/i;
 
 function assertSafe(recs: Recommendation[]) {
   for (const r of recs) {
+    // ensure recs are schema compliant
+    expect(validateRecommendation(r)).toBe(true);
     // no forbidden keys present
     for (const k of forbiddenKeys) {
       // dynamic key check using safe unknown->Record cast (avoid explicit any)

@@ -16,7 +16,6 @@ export interface ScrollCompressorValues {
   suctionPressure: number;
   dischargePressure: number;
   compressionRatio: number;
-  dischargeSuperheat?: number;
   currentDraw?: number;
 }
 
@@ -34,8 +33,6 @@ export interface ScrollCompressorResult extends EngineResult<ScrollCompressorVal
   suctionPressure: number;
   dischargePressure: number;
   compressionRatio: number;
-
-  dischargeSuperheat?: number;
 
   currentDraw?: number;
   currentStatus?: DiagnosticStatus;

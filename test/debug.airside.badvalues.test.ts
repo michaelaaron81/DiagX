@@ -1,4 +1,6 @@
 import { test, expect } from 'vitest';
+import { validateRecommendation } from '../src/shared/recommendation.schema';
+import { assertRecommendationTextSafe } from './helpers/recommendationGuards';
 import { runAirsideEngine } from '../src/modules/airside/airside.engine';
 import type { AirsideMeasurements, AirsideConfig } from '../src/modules/airside/airside.types';
 
@@ -23,6 +25,10 @@ test('debug airside - bad values produce critical frozen coil recommendation', (
   console.log('Airside engine result (debug):', JSON.stringify(result, null, 2));
 
   expect(Array.isArray(result.recommendations)).toBe(true);
+  for (const r of result.recommendations || []) {
+    expect(validateRecommendation(r)).toBe(true);
+    expect(() => assertRecommendationTextSafe(r)).not.toThrow();
+  }
   // look for the frozen coil critical recommendation
   const critical = result.recommendations.find(r => r.id === 'airside_frozen_coil_or_restriction' || r.severity === 'critical');
   expect(critical).toBeTruthy();

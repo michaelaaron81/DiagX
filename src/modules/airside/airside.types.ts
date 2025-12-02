@@ -14,13 +14,26 @@ export interface AirsideMeasurements {
   supplyWetBulb?: number;
   airVelocity?: number;
   measuredCFM?: number;
+  /** Technician-supplied airflow override in CFM */
+  airflowCFMOverride?: number;
+  /** Optional technician note explaining the override source/method */
+  airflowOverrideNote?: string;
+  /** Total external static pressure (supply + return) in inches W.C. */
+  totalExternalStatic?: number;
 }
+
+/** Source of the authoritative airflow value used in engine calculations */
+export type AirflowSource = 'inferred_deltaT' | 'technician_override' | 'measured';
 
 export interface AirsideEngineValues {
   deltaT: number;
   expectedDeltaT: { min: number; ideal: number; max: number; source: string };
   estimatedCFM?: number;
   measuredCFM?: number;
+  /** Authoritative airflow value used for calculations (may be override, measured, or inferred) */
+  airflowCFM?: number;
+  /** Source of the authoritative airflowCFM value */
+  airflowSource?: AirflowSource;
   cfmPerTon?: number;
   expectedCFMPerTon: { min: number; ideal: number; max: number; source: string };
   totalESP?: number;
@@ -50,6 +63,10 @@ export interface AirsideEngineResult extends EngineResult<AirsideEngineValues, A
 
   estimatedCFM?: number;
   measuredCFM?: number;
+  /** Authoritative airflow value used for calculations */
+  airflowCFM?: number;
+  /** Source of the authoritative airflowCFM value */
+  airflowSource?: AirflowSource;
   cfmPerTon?: number;
   expectedCFMPerTon: { min: number; ideal: number; max: number; source: string };
   cfmSource: 'manufacturer' | 'nameplate_calculated' | 'industry';
@@ -68,5 +85,8 @@ export interface AirsideEngineResult extends EngineResult<AirsideEngineValues, A
 }
 
 export type AirsideConfig = WaterCooledUnitProfile;
+
+// Phase-3 alias to align with canonical naming
+export type AirsideValues = AirsideEngineValues;
 
 // Note: prefer named exports only — avoid default exports for types to keep imports explicit

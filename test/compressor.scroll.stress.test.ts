@@ -105,9 +105,20 @@ test('scroll compressor stress test - generate detailed log', () => {
 
     if (result.recommendations && result.recommendations.length > 0) {
       log += `### Recommendations Generated (${result.recommendations.length})\n`;
-      result.recommendations.forEach(rec => {
-        log += `- **${rec.title}**: ${rec.description}\n`;
-      });
+        result.recommendations.forEach(rec => {
+          // keep legacy log format but validate recs against the canonical schema
+          try {
+            // runtime validation: ensure migrations didn't introduce forbidden fields
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { validateRecommendation } = require('../src/shared/recommendation.schema');
+            const { assertRecommendationTextSafe } = require('./helpers/recommendationGuards');
+            validateRecommendation(rec);
+            assertRecommendationTextSafe(rec);
+          } catch (err) {
+            // swallow in logging context
+          }
+          log += `- **${rec.title ?? rec.id ?? '<no title>'}**: ${rec.description ?? rec.summary ?? ''}\n`;
+        });
       log += '\n';
     } else {
       log += `### No Recommendations Generated\n\n`;

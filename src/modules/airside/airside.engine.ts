@@ -1,4 +1,4 @@
-import { AirsideMeasurements, AirsideEngineResult, AirsideConfig, AirsideEngineValues, AirsideEngineFlags } from './airside.types';
+import { AirsideMeasurements, AirsideEngineResult, AirsideConfig, AirsideEngineValues, AirsideEngineFlags, AirflowSource } from './airside.types';
 import { DiagnosticStatus, Recommendation, round, formatTemperature } from '../../shared/wshp.types';
 
 // Helpers: expected ranges (fallback 'industry' if no nameplate data)
@@ -233,16 +233,29 @@ export function runAirsideEngine(measurements: AirsideMeasurements, profile: Air
 
   let estimatedCFM: number | undefined;
   let cfmPerTon: number | undefined;
+  let airflowCFM: number | undefined;
+  let airflowSource: AirflowSource | undefined;
+  
   // Only compute estimates when nominalTons is a positive number and deltaT is reasonable (prevent divide-by-zero / nonsense)
   if (measurements.mode !== 'fan_only' && typeof profile.nominalTons === 'number' && profile.nominalTons > 0 && deltaT >= 1) {
     estimatedCFM = (profile.nominalTons * 12000) / (1.08 * deltaT);
     // ensure we don't divide by zero, profile.nominalTons > 0 already ensures safety
     cfmPerTon = estimatedCFM / profile.nominalTons;
+    // Default: use inferred CFM from deltaT
+    airflowCFM = estimatedCFM;
+    airflowSource = 'inferred_deltaT';
   }
 
   if (measurements.measuredCFM !== undefined && profile.nominalTons) {
     cfmPerTon = measurements.measuredCFM / profile.nominalTons;
+    // Measured CFM takes precedence over inferred
+    airflowCFM = measurements.measuredCFM;
+    airflowSource = 'measured';
   }
+  
+  // Note: airflowCFMOverride is handled at the module layer via validateAirflowOverrideCFM
+  // If override was accepted, the module passes it as measuredCFM or the engine receives
+  // pre-validated airflow. The engine trusts whatever airflow value it receives.
 
   const deltaTAnalysis = analyzeDeltaT(deltaT, expectedDeltaTResult, measurements.mode);
   const airflowAnalysis = analyzeAirflow(cfmPerTon, expectedCFMResult);
@@ -262,6 +275,8 @@ export function runAirsideEngine(measurements: AirsideMeasurements, profile: Air
     expectedDeltaT: expectedDeltaTResult,
     estimatedCFM: estimatedCFM ? round(estimatedCFM, 0) : undefined,
     measuredCFM: measurements.measuredCFM,
+    airflowCFM: airflowCFM ? round(airflowCFM, 0) : undefined,
+    airflowSource,
     cfmPerTon: cfmPerTon ? round(cfmPerTon, 0) : undefined,
     expectedCFMPerTon: expectedCFMResult,
     totalESP: measurements.externalStatic,
@@ -294,6 +309,8 @@ export function runAirsideEngine(measurements: AirsideMeasurements, profile: Air
     deltaTSource: flags.deltaTSource,
     estimatedCFM: values.estimatedCFM,
     measuredCFM: values.measuredCFM,
+    airflowCFM: values.airflowCFM,
+    airflowSource: values.airflowSource,
     cfmPerTon: values.cfmPerTon,
     expectedCFMPerTon: values.expectedCFMPerTon,
     cfmSource: flags.cfmSource,

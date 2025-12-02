@@ -1,4 +1,4 @@
-﻿import { RefrigerationConfig, RefrigerationMeasurements, RefrigerantProfileType } from './refrigeration.types';
+﻿import { RefrigerationConfig, RefrigerationMeasurements, RefrigerantProfileType, RefrigerationValues, RefrigerationFlags } from './refrigeration.types';
 import { REFRIGERANT_DATA, getRefrigerantData, PTChartData } from './refrigerantData';
 import {
   DiagnosticStatus,
@@ -9,37 +9,11 @@ import {
   EngineResult,
 } from '../../shared/wshp.types';
 
-export interface RefrigerationEngineValues {
-  suctionPressure: number;
-  dischargePressure: number;
+// Phase-3: Use canonical types from refrigeration.types.ts
+export type RefrigerationEngineValues = RefrigerationValues;
+export type RefrigerationEngineFlags = RefrigerationFlags;
 
-  suctionSatTemp: number;
-  dischargeSatTemp: number;
-
-  superheat: number;
-  subcooling: number;
-  compressionRatio: number;
-  waterDeltaT: number;
-
-  dischargeSuperheat?: number;
-}
-
-export interface RefrigerationEngineFlags {
-  superheatStatus: DiagnosticStatus;
-
-  subcoolingStatus: DiagnosticStatus;
-
-  compressionRatioStatus: DiagnosticStatus;
-
-  waterTransferStatus: DiagnosticStatus;
-
-  refrigerantProfile: RefrigerantProfileType;
-
-  // Presentation-level strings (overallFinding, likelyIssue, messages) are produced at module/UI layer.
-  disclaimers?: string[];
-}
-
-export interface RefrigerationEngineResult extends EngineResult<RefrigerationEngineValues, RefrigerationEngineFlags> {
+export interface RefrigerationEngineResult extends EngineResult<RefrigerationValues, RefrigerationFlags> {
   status: DiagnosticStatus;
   mode: 'cooling' | 'heating';
 
