@@ -14,6 +14,10 @@ import {
 } from '../../shared/wshp.types';
 import { WaterCooledUnitProfile } from '../../wshp/wshp.profile';
 
+// Phase 3.4: Physics Kernel imports
+import { computeCompressionRatio, getWorstStatus } from '../../physics/hvac';
+import { computePercentRLA } from '../../physics/electrical';
+
 // Compression ratio analysis
 function analyzeCompressionRatio(ratio: number): { status: DiagnosticStatus } {
   if (!isFinite(ratio) || ratio <= 0) {
@@ -45,7 +49,8 @@ function analyzeCurrent(measured: number | undefined, rla: number | undefined): 
     return { status: 'ok' };
   }
 
-  const pct = measured / rla;
+  // Phase 3.4: Use kernel for percent RLA calculation
+  const pct = computePercentRLA(measured, rla);
 
   if (pct > 1.4) {
     return { status: 'critical' };
@@ -82,14 +87,6 @@ function deriveRecipHealthFlags(
   if ((ratioStatus === 'alert' || ratioStatus === 'critical') && sounds?.hissing) health.reedValveSuspected = true;
   if ((ratioStatus === 'alert' || ratioStatus === 'critical') && sounds?.knocking) health.pistonRingWearSuspected = true;
   return health;
-}
-
-// Worst-status helper
-function worstStatus(statuses: DiagnosticStatus[]): DiagnosticStatus {
-  if (statuses.includes('critical')) return 'critical';
-  if (statuses.includes('alert')) return 'alert';
-  if (statuses.includes('warning')) return 'warning';
-  return 'ok';
 }
 
 // VALIDATION â€“ parallel to airside
@@ -258,7 +255,7 @@ export function generateRecipRecommendations(params: {
 export function runReciprocatingCompressorEngine(measurements: ReciprocatingCompressorMeasurements, profile: WaterCooledUnitProfile): ReciprocatingCompressorResult {
   const disc: string[] = [];
 
-  const ratio = measurements.dischargePressure / measurements.suctionPressure;
+  const ratio = computeCompressionRatio(measurements.dischargePressure, measurements.suctionPressure);
   const comp = analyzeCompressionRatio(ratio);
 
   const compressorProfile = profile?.compressor;
@@ -283,7 +280,7 @@ export function runReciprocatingCompressorEngine(measurements: ReciprocatingComp
   const statuses: DiagnosticStatus[] = [comp.status, curr.status];
   if (unloadingAnalysis) statuses.push(unloadingAnalysis.status);
 
-  const overallStatus = worstStatus(statuses);
+  const overallStatus = getWorstStatus(statuses);
 
   // presentation-level overallFinding/likelyIssue are generated at the module/UI layer; engines only produce flags, values, status, and recommendations
 

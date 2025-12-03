@@ -2,6 +2,7 @@ import { getRefrigerantData, isValidRefrigerant, PTChartData } from '../refriger
 import { CondenserApproachMeasurements, CondenserApproachProfile, CondenserApproachResult, CondenserApproachValues, CondenserApproachFlags } from './condenserApproach.types';
 import { DiagnosticStatus } from '../../shared/wshp.types';
 import { generateCondenserApproachRecommendations } from './condenserApproach.recommendations';
+import { getWorstStatus } from '../../physics/hvac';
 
 // very small helper: linear interpolation over PT chart where x=temperature,y=pressure in sample dataset
 function interpolatePTForPressure(pt: PTChartData, pressure: number): number | null {
@@ -106,12 +107,9 @@ export function runCondenserApproachEngine(measurements: CondenserApproachMeasur
     flags.subcoolingStatus = 'ok';
   }
 
-  // result status: one of flags is critical -> critical, else alert->alert, else warning->warning, else ok
+  // result status: use kernel worst-status aggregation
   const combined = [flags.approachStatus, flags.subcoolingStatus];
-  let status: DiagnosticStatus = 'ok';
-  if (combined.includes('critical')) status = 'critical';
-  else if (combined.includes('alert')) status = 'alert';
-  else if (combined.includes('warning')) status = 'warning';
+  const status = getWorstStatus(combined);
 
   const result: CondenserApproachResult = {
     status,

@@ -1,0 +1,117 @@
+# Phase 3.5 — Engine Freeze Enforcer
+# 
+# This workflow blocks modifications to frozen engine files
+# except during approved change windows.
+#
+# Protected files:
+# - *.engine.ts (all diagnostic engines)
+# - src/**/*.types.ts (all type definitions)
+# - src/wshp/wshp.diagx.ts (orchestrator)
+# - src/physics/**/*.ts (physics kernel)
+
+name: Engine Freeze Enforcer
+
+on:
+  pull_request:
+    paths:
+      - 'src/modules/**/*.engine.ts'
+      - 'src/**/*.types.ts'
+      - 'src/wshp/wshp.diagx.ts'
+      - 'src/physics/**/*.ts'
+
+jobs:
+  freeze-check:
+    runs-on: ubuntu-latest
+    name: Check Frozen Files
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Get Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            src/modules/**/*.engine.ts
+            src/**/*.types.ts
+            src/wshp/wshp.diagx.ts
+            src/physics/**/*.ts
+            
+      - name: Check for Freeze Override Label
+        id: check-label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            const hasOverride = pullRequest.labels.some(
+              label => label.name === 'freeze-override-approved'
+            );
+            
+            return hasOverride;
+          result-encoding: string
+          
+      - name: Block Frozen File Changes
+        if: steps.changed-files.outputs.any_changed == 'true' && steps.check-label.outputs.result != 'true'
+        run: |
+          echo "🚨 FREEZE VIOLATION DETECTED 🚨"
+          echo ""
+          echo "The following frozen files have been modified:"
+          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          echo ""
+          echo "These files are protected under Phase 3.5 Engine Freeze policy."
+          echo ""
+          echo "To proceed with changes to frozen files, an architect must:"
+          echo "1. Review the proposed changes"
+          echo "2. Add the 'freeze-override-approved' label to this PR"
+          echo ""
+          echo "For more information, see docs/contracts/ENGINE_FINGERPRINTS.json"
+          exit 1
+          
+      - name: Freeze Override Approved
+        if: steps.changed-files.outputs.any_changed == 'true' && steps.check-label.outputs.result == 'true'
+        run: |
+          echo "✅ Freeze override approved by architect"
+          echo ""
+          echo "Modified frozen files:"
+          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          echo ""
+          echo "⚠️  Remember to update ENGINE_FINGERPRINTS.json after merging"
+
+  fingerprint-check:
+    runs-on: ubuntu-latest
+    name: Verify Engine Fingerprints
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Generate Current Fingerprints
+        run: npx tsx tools/generate-fingerprints.ts --verify
+        continue-on-error: true
+        id: verify-fingerprints
+        
+      - name: Report Fingerprint Status
+        if: steps.verify-fingerprints.outcome == 'failure'
+        run: |
+          echo "⚠️  Engine fingerprints have changed"
+          echo ""
+          echo "If this is an approved change, update ENGINE_FINGERPRINTS.json"
+          echo "by running: npx tsx tools/generate-fingerprints.ts"

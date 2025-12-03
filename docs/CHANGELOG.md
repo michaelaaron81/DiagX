@@ -2,6 +2,89 @@
 
 All notable changes to this repository are recorded in this file. This project follows a lightweight, date-first changelog.
 
+## 2025-12-02 — Phase 3.4 + 3.5 — Physics Kernel Extraction & Engine Freeze
+
+### Phase 3.4: Physics Kernel Extraction
+
+#### Physics Kernel Created
+New `src/physics/` directory with domain-specific modules:
+- `src/physics/hvac/index.ts` — 21 HVAC physics functions + constants
+- `src/physics/electrical/index.ts` — 2 electrical analysis functions
+- `src/physics/hydronic/index.ts` — Hydronic re-exports
+- `src/physics/index.ts` — Main entry point
+
+#### Functions Extracted
+| Function | Domain |
+|----------|--------|
+| `computeSuperheat` | Refrigeration |
+| `computeSubcooling` | Refrigeration |
+| `computeCompressionRatio` | Refrigeration/Compressor |
+| `computeDischargeSuperheat` | Refrigeration |
+| `computeAirDeltaT` | Airside |
+| `computeAirflowFromDeltaT` | Airside |
+| `computeCFMPerTon` | Airside |
+| `computeWaterDeltaT` | Hydronic |
+| `computeWaterDeltaTAbsolute` | Hydronic |
+| `computeExpectedWaterDeltaT` | Hydronic |
+| `computeHydronicBTU` | Hydronic |
+| `computeDesignFlowGPM` | Hydronic |
+| `computeNormalizedFlowIndex` | Hydronic |
+| `computeApproachTemperature` | Condenser |
+| `interpolatePT` | PT Chart |
+| `computeFallbackSaturationTemp` | PT Chart |
+| `getWorstStatus` | Status Aggregation |
+| `computePercentRLA` | Electrical |
+| `analyzeVoltageStatus` | Electrical |
+
+#### Engines Refactored
+All 8 engines now call kernel exclusively:
+- `refrigeration.engine.ts` — Uses 6 kernel functions
+- `airside.engine.ts` — Uses 4 kernel functions
+- `hydronic.engine.ts` — Uses 3 kernel functions
+- `hydronic-source.engine.ts` — Uses 4 kernel functions
+- `scroll.engine.ts` — Uses 2 kernel functions
+- `recip.engine.ts` — Uses 3 kernel functions
+- `condenserApproach.engine.ts` — Uses 1 kernel function
+- `reversing.engine.ts` — Uses 1 kernel function
+
+#### Documentation
+- `docs/phase-3.4/engine_math_inventory.md` — Complete physics inventory
+- `docs/phase-3.4/kernel_api.md` — Kernel API documentation
+- Updated all 7 engine docs with "Physics Core Dependencies" section
+
+### Phase 3.5: Engine Hardening & Freeze
+
+#### Tools Created
+- `tools/validate-engine-docs.ts` — Engine Documentation Validator (EDV)
+- `tools/generate-golden-matrix.ts` — Golden Test Matrix generator
+- `tools/generate-fingerprints.ts` — Integrity fingerprint generator
+
+#### Freeze Mechanisms
+- `.github/workflows/freeze.yml` — CI workflow to block unauthorized engine edits
+- `docs/contracts/ENGINE_FINGERPRINTS.json` — SHA-256 fingerprints for all frozen files
+- `docs/contracts/golden-test-matrix.md` — "No drift permitted" test oracle
+
+#### Documentation Mirror
+All critical documentation copied to `docs/contracts/`:
+- 7 engine contract documents
+- Kernel API documentation
+- Phase 3.4/3.5 completion docs
+- DIL-1.0 license
+
+### Completion Criteria (All Met)
+- ✅ All physics removed from engines
+- ✅ All engines call kernel exclusively
+- ✅ All tests pass with 0 diffs (43 files, 135 tests)
+- ✅ EDV passes all engine docs (7/7)
+- ✅ Golden Test Matrix matches existing behavior
+- ✅ Freeze enforcer active in CI
+- ✅ Fingerprints generated
+- ✅ Documentation mirror complete
+
+**Phase 3 is now FROZEN.** Ready for Phase 4 (RTU + Split Systems).
+
+---
+
 ## 2025-12-01 — Phase 3.3 — Engine Documentation & Licensing
 
 ### License Integration

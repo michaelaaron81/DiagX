@@ -1,6 +1,7 @@
 import { ReversingValveMeasurements, ReversingValveDiagnosis, ReversingValveConfig, ReversingValveValues, ReversingValveFlags, ReversingValvePortTemps } from './reversing.types';
 import { ValidationResult, DiagnosticStatus, Recommendation, round } from '../../shared/wshp.types';
 import { WaterCooledUnitProfile, hasReversingValve } from '../../wshp/wshp.profile';
+import { computeCompressionRatio } from '../../physics/hvac';
 
 export function validateReversingValveMeasurements(measurements: ReversingValveMeasurements, profile: WaterCooledUnitProfile): ValidationResult {
   const errors: string[] = [];
@@ -175,7 +176,7 @@ export function runReversingValveEngine(measurements: ReversingValveMeasurements
   if (ports.indoorCoilLine >= hotThreshold) hotPorts.push('indoor'); else coldPorts.push('indoor');
   if (ports.outdoorCoilLine >= hotThreshold) hotPorts.push('outdoor'); else coldPorts.push('outdoor');
 
-  const compressionRatio = measurements.dischargePressure / measurements.suctionPressure;
+  const compressionRatio = computeCompressionRatio(measurements.dischargePressure, measurements.suctionPressure);
 
   const patternAnalysis = analyzeValvePattern(measurements.requestedMode, ports, hotPorts, coldPorts, tempSpread, compressionRatio);
 

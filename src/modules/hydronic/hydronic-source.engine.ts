@@ -7,14 +7,24 @@ import {
 } from './hydronic-source.types';
 import { generateHydronicSourceRecommendations } from './hydronic-source.recommendations';
 
+// Phase 3.4: Physics Kernel imports
+import {
+  computeWaterDeltaT,
+  computeApproachTemperature,
+  computeDesignFlowGPM,
+  computeNormalizedFlowIndex,
+} from '../../physics/hvac';
+
+// Phase 3.4: computeDeltaT delegates to kernel
 function computeDeltaT(
   enteringWaterTemp: number | null,
   leavingWaterTemp: number | null,
 ): number | null {
   if (enteringWaterTemp == null || leavingWaterTemp == null) return null;
-  return leavingWaterTemp - enteringWaterTemp;
+  return computeWaterDeltaT(leavingWaterTemp, enteringWaterTemp);
 }
 
+// Phase 3.4: computeApproachToAmbient delegates to kernel
 function computeApproachToAmbient(
   leavingWaterTemp: number | null,
   ambientWetBulb: number | null,
@@ -24,10 +34,10 @@ function computeApproachToAmbient(
   if (leavingWaterTemp == null) return null;
 
   if (loopType === 'open_tower' && ambientWetBulb != null) {
-    return leavingWaterTemp - ambientWetBulb;
+    return computeApproachTemperature(leavingWaterTemp, ambientWetBulb);
   }
   if (loopType === 'dry_cooler' && ambientDryBulb != null) {
-    return leavingWaterTemp - ambientDryBulb;
+    return computeApproachTemperature(leavingWaterTemp, ambientDryBulb);
   }
 
   return null;
@@ -49,7 +59,8 @@ function analyzeDeltaTForSource(deltaT: number | null, expected: { min: number; 
 
 function analyzeFlowForSource(flow: number | null, designFlow: number | null) {
   if (flow === null || designFlow == null) return 'unknown' as const;
-  const ratio = flow / designFlow;
+  // Phase 3.4: Use kernel for flow ratio calculation
+  const ratio = computeNormalizedFlowIndex(flow, designFlow);
   if (ratio < 0.5) return 'critical' as const;
   if (ratio < 0.8) return 'alert' as const;
   if (ratio < 0.95 || ratio > 1.05) return 'warning' as const;
@@ -88,8 +99,9 @@ function evaluateFlags(values: HydronicSourceValues, input: HydronicSourceEngine
   };
   const expected = getExpectedHydronicDeltaT(expectedProfile);
   const designFlowFromProfile = profileConfig?.designFlowGPM ?? null;
+  // Phase 3.4: Use kernel for design flow estimation
   const designFlowEstimated = (input.context.tons && expected && expected.ideal)
-    ? Math.round((input.context.tons * 12000) / (expected.ideal * 500))
+    ? Math.round(computeDesignFlowGPM(input.context.tons, expected.ideal))
     : null;
   const designFlowGPM = designFlowFromProfile ?? designFlowEstimated ?? null;
 
@@ -180,8 +192,9 @@ export function runHydronicSourceEngine(
     designFlowGPM: input.context.profileConfig?.designFlowGPM ?? undefined,
   };
   const expected = getExpectedHydronicDeltaT(expectedProfileFromContext);
+  // Phase 3.4: Use kernel for design flow estimation
   const designFlowEstimated = (input.context.tons && expected && expected.ideal)
-    ? Math.round((input.context.tons * 12000) / (expected.ideal * 500))
+    ? Math.round(computeDesignFlowGPM(input.context.tons, expected.ideal))
     : null;
   const designFlowGPM = input.context.profileConfig?.designFlowGPM ?? designFlowEstimated ?? null;
 
@@ -190,7 +203,8 @@ export function runHydronicSourceEngine(
     leavingWaterTemp: leavingWaterTemp ?? null,
     deltaT,
     approachToAmbient,
-    normalizedFlowIndex: flowGpm != null && designFlowGPM != null ? round((flowGpm as number) / designFlowGPM, 2) : null,
+    // Phase 3.4: Use kernel for normalized flow index calculation
+    normalizedFlowIndex: flowGpm != null && designFlowGPM != null ? round(computeNormalizedFlowIndex(flowGpm as number, designFlowGPM), 2) : null,
   };
 
   const flags = evaluateFlags(values, input);

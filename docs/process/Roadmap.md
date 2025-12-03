@@ -1,383 +1,229 @@
-DiagX – Master Roadmap (Full Updated Version)
+Revised DiagX Master Roadmap (UI-adjusted)
 
-Revision: 2025-11-29
+Aligned with Physics Core Vision (P-Core)
 
-This roadmap defines the architectural, engineering, and implementation phases of the DiagX diagnostic system.
-It governs development sequence, gating milestones, and constraints.
+PHASE 0 — Vision & Constitution (DONE)
 
-Only the phase currently in progress may be executed.
-Future phases may be discussed conceptually but not implemented.
+Locked architecture, layering, kernel contract, safety, DIL-1.0, etc.
 
-PHASE 0 — Foundation & Constraints (COMPLETED)
+PHASE 1 — Baseline HVAC Engines (DONE)
 
-Establishes the rules that govern all development.
+WSHP-centered domain engines established.
 
-Achievements
+PHASE 2 — Engine Safety & Validation (DONE)
 
-Defined engine/module separation
+Tier-A, completeness, override safety, TESP gate, deterministic tests.
 
-Locked architectural guardrails (Master Seed v3)
+PHASE 3 — Structural Consolidation (CURRENT)
 
-Created engineer-side seed
+This is still the hinge point before expanding outward.
 
-Created local-editor seed
+3.1 – Profile Wiring + Overrides (DONE)
+3.2 – ModuleResult + CombinedProfileResult (DONE)
+3.3 – Documentation, Licensing (DONE)
+3.4 – Physics Kernel Extraction (NEXT)
+3.5 – Engine Hardening & Freeze (AFTER 3.4)
 
-Added safety constraints (“life-critical accuracy” block)
+Once 3.4 + 3.5 are complete, the HVAC engine layer is safe to build UI on top of.
 
-Established integrity test system
+PHASE 4 — RTU + Split Systems (PREREQUISITE DECK)
 
-Created file-tree, changelog, audit, gap-scan docs
+These are the minimum set before UI development can meaningfully begin.
 
-Established Raptor stress-test workflow
+RTU diagnostic modules
 
-Set the rule: every change requires updated file tree + updated changelog + updated test artifacts
+Economizer module (OA %, mixed air, free cooling)
 
-Gate to Phase 1
+Split-system topology logic
 
-Seeds stable
+Minimal chiller/boiler placeholders (for future-proofing, not full diagnostics)
 
-Rules stable
+Why RTU + Split before UI?
+Because technicians encounter these categories in the wild constantly.
+A WSHP-only UI would underrepresent real-world field conditions and would mislead users about coverage.
+RTU + Split is the minimum “critical mass” for a credible release candidate.
 
-Structure stable
+PHASE 5 — UI / APP DEVELOPMENT (REPRIORITIZED + MOVED EARLIER)
 
-No open decisions remaining
+This phase now comes after RTU+Split, not after full HVAC suite.
 
-Status: PASSED
+5.1 – UI Architecture
 
-PHASE 1 — Baseline System Initialization (COMPLETED)
+Layout engine
 
-This phase created the working skeleton of the DiagX system.
+Navigation flow
 
-Achievements
+Tab structure
 
-Repo scaffolding completed
+Result presentation
 
-Core shared types established
+Profile entry
 
-Initial engines created:
+Data validation overlays (JIT-GL)
 
-Airside
+Error highlighting
 
-Refrigeration
+5.2 – Diagnostic Experience
 
-Scroll compressor
+Problem summary
 
-Recip compressor
+Values + flags
 
-Reversing valve
+System modules integrated
 
-WSHP orchestrator established
+Practical readability at technician level
 
-Initial CLI tools working
+Result grouping by domain + equipment
 
-Vitest integrated
+5.3 – First Release Candidate UI
 
-Baseline documentation suite established
+Supports:
 
-All tests passed for the baseline set
+WSHP
 
-Status: PASSED
+RTU
 
-PHASE 2 — Engine Normalization & Recommendation Integrity (ACTIVE)
+Split Systems
 
-This phase ensures that all engines are correct, stable, deterministic, complete, and safe.
+Not the full suite — but enough for technician field evaluation and early adopters.
 
-This is the phase we are currently in.
+5.4 – App Packaging
 
-PHASE 2 – Objectives
-2.1 Normalize all existing engines
+Mobile-first responsive design
 
-For each domain:
+Desktop-friendly alternative
 
-Engines must emit:
+Offline mode (optional)
 
-status
+Caching profiles
 
-values (numbers only)
+Local-only logging
 
-flags (booleans only)
+When Phase 5 is complete, you have a public-facing preview you can actually hand to technicians.
 
-recommendations[] via designated helper
+PHASE 6 — Remaining HVAC Domains
 
-No English text inside engines
+(Chillers, boilers, steam, electric water heaters, combustion, energy audit)
 
-No inference
+Once the UI exists and field-tested feedback is captured, you expand safely:
 
-No root-cause guessing
+6.1 – Chillers
 
-No UI text
+Condenser water / evaporator water
 
-No formatting
+Approaches
 
-No OEM/IOM data
+Lift
 
-(COMPLETE for current engines)
+Refrigerant configuration differences
 
-2.2 Validate all engines
+TXV/EEV variance
 
-Each engine must have:
+Chiller system modules
 
-Validation helpers
+6.2 – Boilers (HW) + Steam Boilers
 
-Module-level validation gate
+Hydronic-only module extension
 
-Tests verifying:
+Steam module
 
-missing inputs
+Combustion module tie-in
 
-malformed inputs
+ΔT, stack loss, combustion efficiency
 
-edge-case physics
+6.3 – Electric Water Heaters
 
-flag boundaries
+Electrical-only variant
 
-(COMPLETE for current engines)
+Element diagnostics
 
-2.3 Recommendation Completeness (CURRENT STEP)
+6.4 – Full Economizer & Ventilation Module
 
-Stress testing + gap scanning identified missing recommendations.
-These must be corrected before adding new engines.
+Outdoor air fraction
 
-Order of correction (mandatory):
+Mixed air psychrometrics
 
-Recip compressor (critical safety gaps)
+Coil load reduction
 
-Refrigeration (superheat/slugging, under/over-charge safety recs)
+Free-cooling logic
 
-Airside (freeze-up, airflow-critical, ESP-critical)
+6.5 – Energy Audit System Module
 
-Scroll compressor (light patch)
+Enthalpy-based energy flows
 
-Each fix requires:
+System-level capacity tracking
 
-Updating generateXxxRecommendations()
+Envelope interactions
 
-Adding tests for the new recs
+Efficiency estimation
 
-Updating changelog, inventory, gap-scan
+This brings DiagX to “full HVAC vertical.”
 
-Re-running Raptor + Vitest
+PHASE 7 — Building-Level + Behavioral Analysis
 
-Updating docs + file tree
+Time-series, cycling patterns, combined-system diagnostics.
 
-Gate:
+PHASE 8 — Multi-Domain Physics Core Expansion
 
-All existing engines must produce complete, safe recommendation sets for all stress-tested flag combinations.
+(If you choose: auto, power, networking, etc.)
 
-Status: IN PROGRESS
+PHASE 9 — Release, Certification, Support
 
-2.4 Add Beta-1 engines (AFTER rec-fix)
+Final release, documentation, training materials.
 
-Only after outstanding recommendations are fixed:
+WHERE WE ARE RIGHT NOW
+Phase 3.4 — Physics Kernel Extraction
 
-New engines to add:
+This is the key:
+You must complete kernel extraction and engine freeze before touching UI.
 
-HydronicSourceEngine (WSHP + GSHP loop)
+Why?
 
-CondenserApproachEngine (ASHP outdoor condenser)
+UI requires stable engine signatures.
 
-These require:
+CombinedProfileResult must be frozen before UI binding.
 
-Types
+System modules must be stable for UI presentation.
 
-Engine
+Tier-A + completeness behavior must be frozen to avoid UI errors.
 
-Recommendations
+UI will require clean, centralized math to present values consistently.
 
-Validation
+NEXT STEPS (OPERATIONAL)
+1. Begin Phase 3.4 Immediately
 
-Tests
+Inventory all embedded physics
 
-Inventory updates
+Draft kernel API
 
-Gap-scan re-run
+Extract SH/SC/enthalpy/ΔT-BTU/%RLA/psychro math
 
-Gate to Phase 3:
+Refactor engines
 
-All engines (old + new) normalized
+Run full regression suite (must pass 100%)
 
-All recommendations complete
+2. Lock Phase 3.5 Structure
 
-All tests pass
+Engine Documentation Validator
 
-Integrity report clean
+Golden Test Matrix
 
-No open gaps
+Freeze rules (no inline math ever again)
 
-PHASE 3 — Profile Wiring (NOT YET STARTED)
+Fingerprinting system
 
-Profiles equate to “unit types” in DiagX.
-Phase 3 wires engines into full diagnostic flows.
+Documentation mirror
 
-Beta-1 Profile Set
+3. Prepare for Phase 4 (RTU + Split)
 
-WSHP (water source heat pump)
+Once kernel refactor + freeze is complete:
 
-GSHP (ground source heat pump)
+Begin domain analysis for RTU & Split
 
-ASHP (air source heat pump)
+Update profiles
 
-Profile work includes:
+Outline new system modules
 
-Profile definition files
+4. Begin UI Planning Only After 3.5 + 4.1
 
-Domain bundle selection
-
-Mode-based engine execution
-
-Module text (safe, professional, non-procedural)
-
-Unit capability metadata
-
-Measurement help text
-
-Final structured “DiagnosisExplanation” objects
-
-Report-formatting layer (still module-only, not UI)
-
-Deferred Low-Effort Profiles (Post-Beta-1)
-
-(Logged only, not to be implemented)
-
-Straight-cool split AC
-
-Cooling-only RTU
-
-Air handler (airside-only)
-
-Fan coil + hydronic loop
-
-Fresh air unit (airside or airside+hydronic)
-
-Fresh air + DX tempering (RTU-like)
-
-Exhaust fan
-
-TEM UA/DOAS-lite style units
-
-Any future VRF module
-
-No work allowed in Phase 3 on these.
-
-PHASE 4 — Correlation & Multi-Domain Diagnostics (FUTURE, CONCEPTUAL ONLY)
-
-This phase links domains to strengthen diagnostics without violating purity.
-
-Examples:
-
-Airside + Refrigeration:
-
-Coil freeze requires airflow remediation recommendation set
-
-Refrigeration + Compressor:
-
-Critical superheat + critical compression = enhanced safety block
-
-Reversing valve + Refrigeration:
-
-Extreme imbalance patterns produce cross-domain flags
-
-This phase stays conceptual until Phase 3 is complete.
-
-PHASE 5 — Technician Safety, On-Device Validation, and Testing Viewer (FUTURE)
-
-This is where the idea of “in-app integrity tests” is implemented.
-
-Features:
-
-Embedded form of engine tests (safe for technicians)
-
-“How DiagX tests itself” viewer
-
-Stress-test visualizer
-
-Local integrity checks
-
-PT override validation viewer
-
-Safety manual integration
-
-Grainger-linked PPE listings (as allowed)
-
-Shutdown logic + warnings (non-procedural)
-
-Error-checking for:
-
-Sensor overlaps
-
-Impossible combinations
-
-Contradictory measurements
-
-No work allowed until Phase 3 and 4 complete.
-
-PHASE 6 — Voice / Flow Mode + Device-Native Integrations (FUTURE)
-
-This is the phase where the hands-free technician workflow is built.
-
-Voice capture using native OS voice → parsed to structured measurements
-
-OCR for data plates using native OS OCR
-
-Tap-to-assign fields from extracted text
-
-Flow-mode (“Tell me supply,” “Tell me suction pressure”)
-
-Hands-free mode for roof/field operation
-
-Low-vision mode
-
-“Profile-first” measurement flow logic
-
-Strictly conceptual until Phase 5 is finished.
-
-PHASE 7 — UI Shell + Tooling (FUTURE)
-
-Still conceptual.
-
-Desktop + mobile unified UI
-
-Offline-first shell
-
-Local caching
-
-Module bundle loader
-
-JSON-first profile storage
-
-Optional cloud synchronization layer
-
-Not started until everything above is stable.
-
-PHASE 8 — Distribution + Multi-Platform Packaging (FUTURE)
-
-Potential paths:
-
-Progressive Web App
-
-Capacitor native packaging
-
-Desktop packaging (Electron-like wrapper)
-
-Enterprise deployment flows
-
-Offline feature policy
-
-User roles and permissions
-
-Conceptual only.
-
-PHASE 9 — Expansion (FUTURE)
-
-New engines, VRF support, combustion engines, economizer engines, IAQ engines, and multi-unit system diagnostics.
-
-Not allowed until Phase 1–8 are complete.
-
-CURRENT STATUS SUMMARY (2025-11-29)
-Phase	Status
-Phase 0	COMPLETE
-Phase 1	COMPLETE
-Phase 2	ACTIVE — recommendation-gap correction underway
-Hydronic & condenser engines	BLOCKED until rec-fix complete
-Phase 3	Not yet started
-Phase 4–9	Conceptual only
+Sketch wireframes only once the math & engines are fully isolated.

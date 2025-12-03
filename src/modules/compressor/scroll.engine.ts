@@ -1,6 +1,10 @@
 import { ScrollCompressorMeasurements, ScrollCompressorResult, ScrollCompressorValues, ScrollCompressorFlags, ScrollCompressorConfig } from './scroll.types';
 import { DiagnosticStatus, Recommendation, round } from '../../shared/wshp.types';
 
+// Phase 3.4: Physics Kernel imports
+import { computeCompressionRatio } from '../../physics/hvac';
+import { computePercentRLA } from '../../physics/electrical';
+
 function analyzeCompressionRatio(ratio: number) {
   if (ratio < 2.5) return { status: 'critical' as DiagnosticStatus };
   if (ratio < 3.0) return { status: 'alert' as DiagnosticStatus };
@@ -11,7 +15,8 @@ function analyzeCompressionRatio(ratio: number) {
 
 function analyzeCurrent(current: number | undefined, rla: number | undefined) {
   if (current === undefined || rla === undefined) return { status: 'ok' as DiagnosticStatus };
-  const pct = current / rla;
+  // Phase 3.4: Use kernel for percent RLA calculation
+  const pct = computePercentRLA(current, rla);
   if (pct > 1.3) return { status: 'critical' as DiagnosticStatus };
   if (pct > 1.1) return { status: 'alert' as DiagnosticStatus };
   if (pct < 0.4) return { status: 'warning' as DiagnosticStatus };
@@ -69,8 +74,8 @@ export function runScrollCompressorEngine(measurements: ScrollCompressorMeasurem
   const suction = measurements.suctionPressure;
   const discharge = measurements.dischargePressure;
 
-  // use PSIG ratio for now
-  const compressionRatio = discharge / suction;
+  // Phase 3.4: Use kernel for compression ratio calculation
+  const compressionRatio = computeCompressionRatio(discharge, suction);
 
   const compAnalysis = analyzeCompressionRatio(compressionRatio);
 

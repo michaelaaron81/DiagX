@@ -1,6 +1,14 @@
 import { AirsideMeasurements, AirsideEngineResult, AirsideConfig, AirsideEngineValues, AirsideEngineFlags, AirflowSource } from './airside.types';
 import { DiagnosticStatus, Recommendation, round, formatTemperature } from '../../shared/wshp.types';
 
+// Phase 3.4: Physics Kernel imports
+import {
+  computeAirDeltaT,
+  computeAirflowFromDeltaT,
+  computeCFMPerTon,
+  getWorstStatus,
+} from '../../physics/hvac';
+
 // Helpers: expected ranges (fallback 'industry' if no nameplate data)
 export function getExpectedDeltaT(profile: AirsideConfig, mode: 'cooling' | 'heating' | 'fan_only') {
   // Prefer user-provided manufacturer values in profile (profile.airside.manufacturerExpectedDeltaT)
@@ -211,16 +219,12 @@ export function generateRecommendations(
   });
 }
 
-function getWorstStatus(statuses: DiagnosticStatus[]): DiagnosticStatus {
-  if (statuses.includes('critical')) return 'critical';
-  if (statuses.includes('alert')) return 'alert';
-  if (statuses.includes('warning')) return 'warning';
-  return 'ok';
-}
+// Phase 3.4: getWorstStatus now imported from kernel
 
 export function runAirsideEngine(measurements: AirsideMeasurements, profile: AirsideConfig): AirsideEngineResult {
   const disclaimers: string[] = [];
-  const deltaT = Math.abs(measurements.supplyAirTemp - measurements.returnAirTemp);
+  // Phase 3.4: Use kernel for air deltaT calculation
+  const deltaT = computeAirDeltaT(measurements.supplyAirTemp, measurements.returnAirTemp);
 
   const expectedDeltaTResult = getExpectedDeltaT(profile, measurements.mode);
   const expectedCFMResult = getExpectedCFMPerTon(profile, measurements.mode);
@@ -238,16 +242,18 @@ export function runAirsideEngine(measurements: AirsideMeasurements, profile: Air
   
   // Only compute estimates when nominalTons is a positive number and deltaT is reasonable (prevent divide-by-zero / nonsense)
   if (measurements.mode !== 'fan_only' && typeof profile.nominalTons === 'number' && profile.nominalTons > 0 && deltaT >= 1) {
-    estimatedCFM = (profile.nominalTons * 12000) / (1.08 * deltaT);
+    // Phase 3.4: Use kernel for airflow calculations
+    estimatedCFM = computeAirflowFromDeltaT(profile.nominalTons, deltaT);
     // ensure we don't divide by zero, profile.nominalTons > 0 already ensures safety
-    cfmPerTon = estimatedCFM / profile.nominalTons;
+    cfmPerTon = computeCFMPerTon(estimatedCFM, profile.nominalTons);
     // Default: use inferred CFM from deltaT
     airflowCFM = estimatedCFM;
     airflowSource = 'inferred_deltaT';
   }
 
   if (measurements.measuredCFM !== undefined && profile.nominalTons) {
-    cfmPerTon = measurements.measuredCFM / profile.nominalTons;
+    // Phase 3.4: Use kernel for CFM/ton calculation
+    cfmPerTon = computeCFMPerTon(measurements.measuredCFM, profile.nominalTons);
     // Measured CFM takes precedence over inferred
     airflowCFM = measurements.measuredCFM;
     airflowSource = 'measured';

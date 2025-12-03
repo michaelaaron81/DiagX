@@ -17,17 +17,18 @@
     "start": "node -r ts-node/register src/cli/demo.ts"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "ts-node": "^10.0.0",
-    "vitest": "^4.0.14",
-    "@vitest/coverage-v8": "^4.0.14",
-    "eslint": "^8.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "prettier": "^2.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@vitest/coverage-v8": "^4.0.14",
+    "ajv": "^8.12.0",
+    "eslint": "^8.0.0",
     "eslint-config-prettier": "^8.0.0",
     "eslint-plugin-import": "^2.0.0",
-    "ajv": "^8.12.0"
+    "glob": "^13.0.0",
+    "prettier": "^2.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.14"
   },
   "dependencies": {
     "commander": "^10.0.0"

@@ -9,6 +9,19 @@ import {
   EngineResult,
 } from '../../shared/wshp.types';
 
+// Phase 3.4: Physics Kernel imports
+import {
+  interpolatePT as kernelInterpolatePT,
+  computeFallbackSaturationTemp,
+  computeSuperheat,
+  computeSubcooling,
+  computeCompressionRatio,
+  computeDischargeSuperheat,
+  computeWaterDeltaTAbsolute,
+  computeExpectedWaterDeltaT,
+  getWorstStatus,
+} from '../../physics/hvac';
+
 // Phase-3: Use canonical types from refrigeration.types.ts
 export type RefrigerationEngineValues = RefrigerationValues;
 export type RefrigerationEngineFlags = RefrigerationFlags;
@@ -43,44 +56,17 @@ export interface RefrigerationEngineResult extends EngineResult<RefrigerationVal
 }
 
 // Interpolate a PT chart (ptData: Array<[tempF, pressurePSIG]>)
+// Phase 3.4: Delegates to kernel, exported for backward compatibility
 export function interpolatePT(pressure: number, ptData: PTChartData): number | null {
-  if (!ptData || ptData.length === 0) return null;
-
-  // Data: [tempF, pressurePsig] sorted by pressure ascending
-  for (let i = 0; i < ptData.length - 1; i++) {
-    const [t1, p1] = ptData[i];
-    const [t2, p2] = ptData[i + 1];
-    if (pressure >= p1 && pressure <= p2) {
-      const ratio = (pressure - p1) / (p2 - p1);
-      return t1 + ratio * (t2 - t1);
-    }
-  }
-
-  // Extrapolate using nearest interval
-  if (ptData.length >= 2) {
-    if (pressure < ptData[0][1]) {
-      const [t1, p1] = ptData[0];
-      const [t2, p2] = ptData[1];
-      const slope = (t2 - t1) / (p2 - p1);
-      return t1 + slope * (pressure - p1);
-    }
-    if (pressure > ptData[ptData.length - 1][1]) {
-      const [t1, p1] = ptData[ptData.length - 2];
-      const [t2, p2] = ptData[ptData.length - 1];
-      const slope = (t2 - t1) / (p2 - p1);
-      return t2 + slope * (pressure - p2);
-    }
-  }
-
-  return null;
+  return kernelInterpolatePT(pressure, ptData);
 }
 
 function getSaturationTemp(pressure: number, refrigerantType: string): number {
   const data = getRefrigerantData(refrigerantType) || REFRIGERANT_DATA[refrigerantType];
-  if (!data) return 0.215 * pressure + 10.5; // fallback
+  if (!data) return computeFallbackSaturationTemp(pressure); // Phase 3.4: kernel call
 
   const temp = interpolatePT(pressure, data.pt);
-  if (temp === null) return 0.215 * pressure + 10.5;
+  if (temp === null) return computeFallbackSaturationTemp(pressure); // Phase 3.4: kernel call
   return temp;
 }
 
@@ -139,7 +125,8 @@ function analyzeCompressionRatio(ratio: number) {
 }
 
 function analyzeWaterTransfer(waterDeltaT: number, tons: number, designGPM: number) {
-  const expectedDeltaT = (tons * 12000) / (designGPM * 500);
+  // Phase 3.4: Use kernel for expected ΔT calculation
+  const expectedDeltaT = computeExpectedWaterDeltaT(tons, designGPM);
   const tolerance = 0.25;
   const minAcceptable = expectedDeltaT * (1 - tolerance);
   const maxAcceptable = expectedDeltaT * (1 + tolerance);
@@ -151,12 +138,7 @@ function analyzeWaterTransfer(waterDeltaT: number, tons: number, designGPM: numb
   return { status: 'ok' as DiagnosticStatus };
 }
 
-function getWorstStatus(statuses: DiagnosticStatus[]): DiagnosticStatus {
-  if (statuses.includes('critical')) return 'critical';
-  if (statuses.includes('alert')) return 'alert';
-  if (statuses.includes('warning')) return 'warning';
-  return 'ok';
-}
+// Phase 3.4: getWorstStatus now imported from kernel
 
 export function generateRefrigerationRecommendations(result: RefrigerationEngineResult): Recommendation[] {
   const { flags, values, status } = result;
@@ -361,16 +343,18 @@ export function runRefrigerationEngine(measurements: RefrigerationMeasurements, 
     }
   }
 
-  const superheat = measurements.suctionTemp - suctionSatTemp;
-  const subcooling = dischargeSatTemp - measurements.liquidTemp;
-
-  const compressionRatio = measurements.dischargePressure / measurements.suctionPressure;
+  // Phase 3.4: Use kernel functions for core physics calculations
+  const superheat = computeSuperheat(measurements.suctionTemp, suctionSatTemp);
+  const subcooling = computeSubcooling(dischargeSatTemp, measurements.liquidTemp);
+  const compressionRatio = computeCompressionRatio(measurements.dischargePressure, measurements.suctionPressure);
   const waterDeltaT = (measurements.leavingWaterTemp !== undefined && measurements.enteringWaterTemp !== undefined)
-    ? Math.abs(measurements.leavingWaterTemp - measurements.enteringWaterTemp)
+    ? computeWaterDeltaTAbsolute(measurements.leavingWaterTemp, measurements.enteringWaterTemp)
     : 0;
 
   let dischargeSuperheat: number | undefined = undefined;
-  if (measurements.dischargeTemp !== undefined) dischargeSuperheat = measurements.dischargeTemp - dischargeSatTemp;
+  if (measurements.dischargeTemp !== undefined) {
+    dischargeSuperheat = computeDischargeSuperheat(measurements.dischargeTemp, dischargeSatTemp);
+  }
 
   const superheatAnalysis = analyzeSuperheat(superheat, measurements.mode, config.metering);
   const subcoolingAnalysis = analyzeSubcooling(subcooling);

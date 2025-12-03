@@ -1,0 +1,171 @@
+{
+  "version": "1.0.0",
+  "generated": "2025-12-03T03:25:47.896Z",
+  "phase": "3.5",
+  "description": "Engine fingerprints for integrity verification. Any change to these files requires architect approval.",
+  "engines": [
+    {
+      "path": "modules/airside/airside.engine.ts",
+      "sha256": "ad0a6fe37ed7aad88c646266d2c1a598c361cadf6cddfcf47da834e24b020a18",
+      "size": 17135,
+      "lastModified": "2025-12-03T03:12:42.999Z"
+    },
+    {
+      "path": "modules/compressor/recip.engine.ts",
+      "sha256": "882fb2fd13af9b815c2e4a870971834e684d3eade690f1007c3cb649ea3bb14a",
+      "size": 14175,
+      "lastModified": "2025-12-03T03:16:56.732Z"
+    },
+    {
+      "path": "modules/compressor/scroll.engine.ts",
+      "sha256": "ff1fffbeb429ea5b8d810c78a1bbfb6c7d313ac6336ead07fad7df535ad828f0",
+      "size": 6287,
+      "lastModified": "2025-12-03T03:14:28.501Z"
+    },
+    {
+      "path": "modules/condenserApproach/condenserApproach.engine.ts",
+      "sha256": "5ab3921d6f0c5383eb639ec15ecdb8a4632a5cfa525b4af039ebe56580184cdb",
+      "size": 5040,
+      "lastModified": "2025-12-03T03:17:55.422Z"
+    },
+    {
+      "path": "modules/hydronic/hydronic-source.engine.ts",
+      "sha256": "0ed53975ad54e8b1bb22e74fffffeb9d15bf0da37089ab5deb7b228999bfc31d",
+      "size": 7765,
+      "lastModified": "2025-12-03T03:14:01.325Z"
+    },
+    {
+      "path": "modules/hydronic/hydronic.engine.ts",
+      "sha256": "4b53aa63c096985ca0b5e7fe6c9a909a8883b83b77a07bef95e7e90aef7ac8dc",
+      "size": 4602,
+      "lastModified": "2025-12-03T03:13:13.095Z"
+    },
+    {
+      "path": "modules/refrigeration/refrigeration.engine.ts",
+      "sha256": "af30adc488de40c5cf0bb68db66aba91912631b6be9aa30ab513143f0aea22ed",
+      "size": 20207,
+      "lastModified": "2025-12-03T03:12:03.434Z"
+    },
+    {
+      "path": "modules/reversingValve/reversing.engine.ts",
+      "sha256": "09438bd3044add5c7c5cc87105aa5acfb94e86e580f513f7df7998ef4f48b5ba",
+      "size": 10884,
+      "lastModified": "2025-12-03T03:18:23.986Z"
+    }
+  ],
+  "types": [
+    {
+      "path": "modules/airside/airside.types.ts",
+      "sha256": "fbb7d88559a349b23147cf5486eb791132393333a23d4ac67272648672aa1782",
+      "size": 3445,
+      "lastModified": "2025-12-02T03:39:15.769Z"
+    },
+    {
+      "path": "modules/compressor/recip.types.ts",
+      "sha256": "1870dcef63ee9f846d57a149ef29eeef8be03c2f740719409b0c97fca93b1e9a",
+      "size": 2299,
+      "lastModified": "2025-12-01T02:16:49.033Z"
+    },
+    {
+      "path": "modules/compressor/scroll.types.ts",
+      "sha256": "06fd4b2995215d15d7b28a97ff4f9ee9dc9037a87db6e4c210ee248ed1d26e27",
+      "size": 1541,
+      "lastModified": "2025-12-02T02:48:54.361Z"
+    },
+    {
+      "path": "modules/condenserApproach/condenserApproach.types.ts",
+      "sha256": "7082775f8420881d1506b83d7128304393792d8b896cd67dd69b9f2a2408be2c",
+      "size": 1076,
+      "lastModified": "2025-11-30T01:49:11.100Z"
+    },
+    {
+      "path": "modules/hydronic/hydronic-source.types.ts",
+      "sha256": "af7689f218f769cc406137c5b6164951b5087b005e0edd28ccd263f6e133eb29",
+      "size": 2633,
+      "lastModified": "2025-12-01T02:16:49.039Z"
+    },
+    {
+      "path": "modules/hydronic/hydronic.types.ts",
+      "sha256": "ffce284644043dca56f41df5becd273fd302644058b27f3417d96bc765d3346a",
+      "size": 1644,
+      "lastModified": "2025-11-30T01:49:10.903Z"
+    },
+    {
+      "path": "modules/refrigeration/refrigeration.types.ts",
+      "sha256": "09e27a3fefe240e45a88a658197e55dfd2c8f20250ded36732fe36797daba682",
+      "size": 2675,
+      "lastModified": "2025-12-02T03:39:15.769Z"
+    },
+    {
+      "path": "modules/reversingValve/reversing.types.ts",
+      "sha256": "7720971a22058181912947245e8669195467ed8e87ce8bdd373d1df8e098a8f9",
+      "size": 1884,
+      "lastModified": "2025-12-01T02:00:11.644Z"
+    },
+    {
+      "path": "shared/combinedProfileResult.types.ts",
+      "sha256": "2569e92b4ee9bbd24c664e36d3030de9e5b5f064054177d80df4b13dc9423482",
+      "size": 998,
+      "lastModified": "2025-12-02T03:39:15.903Z"
+    },
+    {
+      "path": "shared/moduleResult.types.ts",
+      "sha256": "327b74a9a6ce16213ba85d62351d7ebc531b3e408269f727eca20ffe4912eb12",
+      "size": 2017,
+      "lastModified": "2025-12-02T03:39:15.903Z"
+    },
+    {
+      "path": "shared/profileInput.types.ts",
+      "sha256": "a9d564d9538d0412bf8ee9059aaa48f790b18471b751107b0122000713389a7f",
+      "size": 1274,
+      "lastModified": "2025-12-02T03:39:15.903Z"
+    },
+    {
+      "path": "shared/validation.types.ts",
+      "sha256": "fccb66efa97fca6ea2c0ff438d1489616015598ac3b3bc16d9e97106045c1668",
+      "size": 641,
+      "lastModified": "2025-11-29T16:18:48.479Z"
+    },
+    {
+      "path": "shared/wshp.types.ts",
+      "sha256": "580b9b88e86769fe99b4e0dda5b4944df96040b8fc753a6d3608ccd5a24fee09",
+      "size": 5709,
+      "lastModified": "2025-12-01T02:16:49.048Z"
+    }
+  ],
+  "kernel": [
+    {
+      "path": "physics/electrical/index.ts",
+      "sha256": "c99be7751b757f97a2bd3e6bcfa59383778957d4094f2f3b66051a8de0d4cd1a",
+      "size": 2157,
+      "lastModified": "2025-12-03T03:03:03.988Z"
+    },
+    {
+      "path": "physics/hvac/index.ts",
+      "sha256": "94a07350eebe3a1d73af68a03ac4e683428e3f0244ea7acb7b4195fba5ec9ec7",
+      "size": 10656,
+      "lastModified": "2025-12-03T03:02:50.231Z"
+    },
+    {
+      "path": "physics/hydronic/index.ts",
+      "sha256": "d51d9479f0db45ca7e71504f10ed4d6a139397a36283b2a777a2e72effe4c48f",
+      "size": 1523,
+      "lastModified": "2025-12-03T03:03:14.953Z"
+    },
+    {
+      "path": "physics/index.ts",
+      "sha256": "fee52aa611012d15612b452f4f3119cc721588a76dd4ab2430ab3a5b2c21ab30",
+      "size": 631,
+      "lastModified": "2025-12-03T03:03:19.807Z"
+    }
+  ],
+  "orchestrator": [
+    {
+      "path": "wshp/wshp.diagx.ts",
+      "sha256": "ab321964d024a65c31bb0b985164119fa88183a0b779c3640aa33bc29c02cb50",
+      "size": 23574,
+      "lastModified": "2025-12-02T03:39:15.903Z"
+    }
+  ],
+  "checksum": "52067af22e4d4970"
+}

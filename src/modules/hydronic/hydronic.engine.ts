@@ -2,6 +2,13 @@ import { HydronicMeasurements, HydronicProfileConfig, HydronicEngineResult } fro
 import { generateHydronicRecommendations } from './hydronic.recommendations';
 import { DiagnosticStatus, ValidationResult, round } from '../../shared/wshp.types';
 
+// Phase 3.4: Physics Kernel imports
+import {
+  computeWaterDeltaT,
+  computeNormalizedFlowIndex,
+  getWorstStatus,
+} from '../../physics/hvac';
+
 export const HYDRONIC_INDUSTRY_EXPECTED: { min: number; ideal: number; max: number; source: 'industry' } = { min: 10, ideal: 12, max: 14, source: 'industry' };
 
 export function getExpectedHydronicDeltaT(profile: HydronicProfileConfig) {
@@ -34,19 +41,15 @@ function analyzeDeltaT(deltaT: number | null, expected: { min: number; ideal: nu
 
 function analyzeFlow(flow: number | null, designFlow: number | null): { status: DiagnosticStatus } {
   if (flow === null || designFlow == null) return { status: 'unknown' as DiagnosticStatus };
-  const ratio = flow / designFlow;
+  // Phase 3.4: Use kernel for flow ratio calculation
+  const ratio = computeNormalizedFlowIndex(flow, designFlow);
   if (ratio < 0.5) return { status: 'critical' as DiagnosticStatus };
   if (ratio < 0.8) return { status: 'alert' as DiagnosticStatus };
   if (ratio < 0.95 || ratio > 1.05) return { status: 'warning' as DiagnosticStatus };
   return { status: 'ok' as DiagnosticStatus };
 }
 
-function getWorstStatus(statuses: DiagnosticStatus[]): DiagnosticStatus {
-  if (statuses.includes('critical')) return 'critical';
-  if (statuses.includes('alert')) return 'alert';
-  if (statuses.includes('warning')) return 'warning';
-  return 'ok';
-}
+// Phase 3.4: getWorstStatus now imported from kernel
 
 export function runHydronicEngine(measurements: HydronicMeasurements, context: { profile: HydronicProfileConfig }): HydronicEngineResult {
   const profile = context.profile || {};
@@ -57,8 +60,9 @@ export function runHydronicEngine(measurements: HydronicMeasurements, context: {
     disclaimers.push('Hydronic expected ΔT values are industry defaults; provide profile.expectedDeltaT to tune performance checks.');
   }
 
+  // Phase 3.4: Use kernel for water deltaT calculation
   const waterDeltaT = (measurements.leavingWaterTemp !== null && measurements.enteringWaterTemp !== null)
-    ? round((measurements.leavingWaterTemp ?? 0) - (measurements.enteringWaterTemp ?? 0), 1)
+    ? round(computeWaterDeltaT(measurements.leavingWaterTemp ?? 0, measurements.enteringWaterTemp ?? 0), 1)
     : null;
 
   const flowRateGPM = measurements.flowRateGPM ?? null;

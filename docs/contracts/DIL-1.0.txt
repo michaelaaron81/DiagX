@@ -1,0 +1,47 @@
+DiagX Internal License (DIL-1.0)
+
+Copyright (c) 2025 DiagX Project
+
+CONFIDENTIAL AND PROPRIETARY
+
+This software, including its source code, documentation, diagnostic algorithms,
+recommendation logic, threshold values, physics models, and safety-critical
+components (collectively, the "Software"), is the proprietary and confidential
+property of the DiagX Project.
+
+RESTRICTIONS:
+
+1. NO EXTERNAL DISTRIBUTION: The Software may not be copied, distributed,
+   sublicensed, or otherwise made available to any third party without prior
+   written authorization from the DiagX Project owner.
+
+2. NO PUBLIC DISCLOSURE: No portion of the Software, including but not limited
+   to diagnostic thresholds, physics formulas, recommendation text, or internal
+   heuristics, may be published, posted, or disclosed in any public forum,
+   repository, documentation, or medium.
+
+3. NO DERIVATIVE WORKS: No derivative works may be created from the Software
+   without prior written authorization.
+
+4. INTERNAL USE ONLY: The Software is authorized for internal development,
+   testing, and deployment purposes only within the DiagX Project.
+
+5. SAFETY-CRITICAL COMPONENTS: Any modifications to safety-critical components,
+   including but not limited to shutdown recommendations, critical severity
+   thresholds, and compressor protection logic, require explicit architect
+   approval.
+
+6. IP PROTECTION: All intellectual property embodied in the Software, including
+   diagnostic methodologies, recommendation systems, and engine architectures,
+   remains the exclusive property of the DiagX Project.
+
+DISCLAIMER:
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+
+This license supersedes any prior agreements or understandings regarding the
+Software.
+
+For licensing inquiries, contact the DiagX Project owner.
